@@ -26,12 +26,7 @@ type Expense = {
 export default function FinancialsPage() {
   const [txns, setTxns] = useState<Txn[]>([]);
   const [expenses, setExpenses] = useState<Expense[]>([]);
-  const [summary, setSummary] = useState<{
-    revenue: number;
-    cost: number;
-    expenses: number;
-    profit: number;
-  }>({
+  const [summary, setSummary] = useState({
     revenue: 0,
     cost: 0,
     expenses: 0,
@@ -81,8 +76,10 @@ export default function FinancialsPage() {
     const expenseList = exp || [];
     setExpenses(expenseList);
 
-    // Calculate expense total
-    const totalExpenses = expenseList.reduce((sum, e: any) => sum + Number(e.amount || 0), 0);
+    const totalExpenses = expenseList.reduce(
+      (sum, e) => sum + Number(e.amount || 0),
+      0
+    );
 
     // --- Compute financial summary ---
     let revenue = 0,
@@ -117,18 +114,14 @@ export default function FinancialsPage() {
   return (
     <div className="fade-slide">
       <h2 style={{ fontSize: 20, fontWeight: 700 }}>Financials</h2>
-      <p className="kicker mb-4">Revenue, cost, expenses and total profit</p>
+      <p className="kicker mb-4">Revenue, cost, expenses and net profit</p>
 
       {/* Summary Cards */}
       <div className="grid grid-cols-1 gap-3 mb-4">
         <StatCard title="Total Revenue" value={`₹${summary.revenue.toFixed(2)}`} className="fade" />
         <StatCard title="Total Cost" value={`₹${summary.cost.toFixed(2)}`} className="fade" />
         <StatCard title="Total Expenses" value={`₹${summary.expenses.toFixed(2)}`} className="fade" />
-        <StatCard
-          title="Net Profit"
-          value={`₹${summary.profit.toFixed(2)}`}
-          className="fade"
-        />
+        <StatCard title="Net Profit" value={`₹${summary.profit.toFixed(2)}`} className="fade" />
       </div>
 
       {/* By Product Breakdown */}
@@ -147,19 +140,14 @@ export default function FinancialsPage() {
               <div>
                 <div style={{ fontWeight: 700 }}>{obj.name}</div>
                 <div className="kicker">
-                  Revenue: ₹{(obj.revenue || 0).toFixed(2)} • Cost: ₹
-                  {(obj.cost || 0).toFixed(2)}
+                  Revenue: ₹{obj.revenue.toFixed(2)} • Cost: ₹
+                  {obj.cost.toFixed(2)}
                 </div>
               </div>
 
               <div style={{ textAlign: "right" }}>
-                <div
-                  style={{
-                    fontWeight: 700,
-                    color: "var(--accent1)",
-                  }}
-                >
-                  ₹{(obj.profit || 0).toFixed(2)}
+                <div style={{ fontWeight: 700, color: "var(--accent1)" }}>
+                  ₹{obj.profit.toFixed(2)}
                 </div>
               </div>
             </div>
@@ -176,16 +164,14 @@ export default function FinancialsPage() {
 
           {expenses.map((e) => (
             <div key={e.id} className="card p-3 fade">
-              <div className="flex justify-between">
-                <div>
-                  <div className="font-bold text-red-300">₹{e.amount}</div>
-                  <div className="kicker">{e.category}</div>
-                  {e.note && (
-                    <div className="text-sm text-gray-300">{e.note}</div>
-                  )}
-                  <div className="text-xs opacity-60">
-                    {new Date(e.created_at).toLocaleString()}
-                  </div>
+              <div>
+                <div className="font-bold text-red-400">₹{e.amount}</div>
+                <div className="kicker">{e.category}</div>
+                {e.note && (
+                  <div className="text-sm text-gray-400">{e.note}</div>
+                )}
+                <div className="text-xs opacity-60 mt-1">
+                  {new Date(e.created_at).toLocaleString()}
                 </div>
               </div>
             </div>

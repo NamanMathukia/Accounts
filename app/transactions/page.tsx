@@ -5,7 +5,18 @@ import { supabase } from "../../lib/supabaseClient";
 import ConfirmButton from "../components/ConfirmButton";
 
 export default function TransactionsPage() {
-  const [txns, setTxns] = useState([]);
+type Txn = {
+  id: string;
+  product_id: string;
+  txn_type: "purchase" | "sale";
+  count_packets: number;
+  packet_size_grams: number;
+  unit_price: number;
+  total_price: number;
+  created_at: string;
+};
+
+const [txns, setTxns] = useState<Txn[]>([]);
 
   useEffect(() => {
     loadTxns();

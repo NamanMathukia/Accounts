@@ -8,7 +8,14 @@ export default function ExpensesPage() {
   const [category, setCategory] = useState("");
   const [amount, setAmount] = useState<number | "">("");
   const [note, setNote] = useState("");
-  const [expenses, setExpenses] = useState([]);
+type Expense = {
+  id: string;
+  title: string;
+  amount: number;
+  created_at: string;
+};
+
+const [expenses, setExpenses] = useState<Expense[]>([]);
 
   useEffect(() => {
     loadExpenses();
