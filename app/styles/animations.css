@@ -1,0 +1,58 @@
+/* ---------------------------------- */
+/* GLOBAL ANIMATION SYSTEM – OPTION A */
+/* Safe, minimal, fast on all phones  */
+/* ---------------------------------- */
+
+/* Smooth fade-in */
+.fade {
+  opacity: 0;
+  animation: fadeIn .35s ease forwards;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+/* Fade + slight upward motion */
+.fade-slide {
+  opacity: 0;
+  transform: translateY(6px);
+  animation: fadeSlide .40s ease forwards;
+}
+
+@keyframes fadeSlide {
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Subtle pulse for loading skeletons */
+.pulse {
+  animation: pulseAnim 1.2s ease-in-out infinite;
+}
+
+@keyframes pulseAnim {
+  0%, 100% { opacity: 0.55; }
+  50% { opacity: 1; }
+}
+
+/* Button tap effect */
+.tap-scale {
+  transition: transform .12s ease;
+}
+
+.tap-scale:active {
+  transform: scale(0.97);
+}
+
+/* Sidebar slide */
+.slide-left {
+  transform: translateX(-260px);
+  animation: slideLeft .32s ease forwards;
+}
+
+@keyframes slideLeft {
+  to { transform: translateX(0); }
+}
