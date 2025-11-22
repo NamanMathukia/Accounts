@@ -5,14 +5,7 @@ import { supabase } from "../../lib/supabaseClient";
 import ConfirmButton from "../components/ConfirmButton";
 
 export default function ConvertPage() {
-type Product = {
-  id: string;
-  name: string;
-  stock_packets_250: number;
-  stock_packets_500: number;
-};
-
-const [products, setProducts] = useState<Product[]>([]);
+  const [products, setProducts] = useState([]);
   const [productId, setProductId] = useState("");
   const [direction, setDirection] = useState("500to250");
   const [count, setCount] = useState(1);
