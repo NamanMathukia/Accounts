@@ -1,7 +1,5 @@
 "use client";
 
-import Link from "next/link";
-
 export default function Sidebar() {
   function closeMenu() {
     document.body.classList.remove("sidebar-open");
@@ -9,25 +7,25 @@ export default function Sidebar() {
 
   return (
     <>
-      {/* Dark overlay behind drawer */}
+      {/* Overlay */}
       <div className="sidebar-overlay" onClick={closeMenu}></div>
 
-      {/* Sliding Drawer */}
-      <aside className="sidebar-drawer">
+      {/* Drawer */}
+      <div className="sidebar-drawer">
         <button className="sidebar-close" onClick={closeMenu}>✕</button>
 
         <h2 className="sidebar-title">Menu</h2>
 
-        <nav className="sidebar-links">
-          <Link href="/" onClick={closeMenu}>Dashboard</Link>
-          <Link href="/add-product" onClick={closeMenu}>Add Product</Link>
-          <Link href="/add-transaction" onClick={closeMenu}>Add Transaction</Link>
-          <Link href="/expenses" className="sidebar-link">Expenses</Link>
-          <Link href="/transactions" onClick={closeMenu}>Transactions</Link>
-          <Link href="/convert" onClick={closeMenu}>Convert Packets</Link>
-          <Link href="/financials" onClick={closeMenu}>Financials</Link>
-        </nav>
-      </aside>
+        <div className="sidebar-links">
+          <a href="/">Dashboard</a>
+          <a href="/add-product">Add Product</a>
+          <a href="/add-transaction">Add Transaction</a>
+          <a href="/expenses">Expenses</a>
+          <a href="/transactions">Transactions</a>
+          <a href="/convert">Convert Packets</a>
+          <a href="/financials">Financials</a>
+        </div>
+      </div>
     </>
   );
 }
