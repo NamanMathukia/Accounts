@@ -4,7 +4,6 @@ import React, { useEffect, useState } from "react";
 import { supabase } from "../../lib/supabaseClient";
 import { useRouter } from "next/navigation";
 import ConfirmButton from "../components/ConfirmButton";
-import { useToast } from "../components/Toast";
 
 type Product = {
   id: string;
@@ -21,22 +20,22 @@ export default function AddTransactionPage() {
   const [txnType, setTxnType] = useState<"purchase" | "sale">("purchase");
   const [packetSize, setPacketSize] = useState<number>(250);
   const [count, setCount] = useState<number>(1);
-  const [unitPrice, setUnitPrice] = useState<number>(0);
+
+  /* NEW FIELD */
+  const [pricePerKg, setPricePerKg] = useState<number>(0);
 
   const router = useRouter();
-  const { showToast } = useToast();
 
   useEffect(() => {
     loadProducts();
   }, []);
 
   async function loadProducts() {
-    const { data, error } = await supabase
+    const { data } = await supabase
       .from("products")
       .select("id, name, stock_packets_250, stock_packets_500")
       .order("name");
 
-    if (error) return showToast("Failed to load products");
     setProducts(data || []);
   }
 
@@ -46,33 +45,39 @@ export default function AddTransactionPage() {
     setSelectedProduct(p);
   }
 
-  async function addTxn() {
-    if (!productId) return showToast("Select a product");
-    if (count <= 0) return showToast("Enter valid packet count");
-    if (unitPrice <= 0) return showToast("Enter valid price");
+  /* Convert price per KG → price per packet */
+  function calculateUnitPrice() {
+    if (!pricePerKg) return 0;
 
+    if (packetSize === 250) return pricePerKg * 0.25;
+    if (packetSize === 500) return pricePerKg * 0.5;
+
+    return 0;
+  }
+
+  async function addTxn() {
+    if (!productId) return alert("Select a product");
+    if (count <= 0) return alert("Enter valid packet count");
+    if (pricePerKg <= -1) return alert("Enter valid price per KG");
+
+    const unitPrice = calculateUnitPrice();
     const total = count * unitPrice;
 
-    // -----------------------------
-    // 🚨 Prevent sale if no stock
-    // -----------------------------
+    // Prevent sale when insufficient stock
     if (txnType === "sale") {
-      if (!selectedProduct) return showToast("Product not loaded yet");
+      if (!selectedProduct) return alert("Product not loaded");
 
-      const availablePackets =
+      const available =
         packetSize === 500
           ? (selectedProduct.stock_packets_500 || 0)
           : (selectedProduct.stock_packets_250 || 0);
 
-      if (availablePackets < count) {
-        return showToast(
-          `Not enough stock.\nAvailable: ${availablePackets} packets`
+      if (available < count) {
+        return alert(
+          `Not enough stock.\nAvailable: ${available} packets\nRequested: ${count}`
         );
       }
     }
-
-    // 👉 REQUIRED FIX FOR SUPABASE
-    const quantityGrams = packetSize * count;
 
     const { error } = await supabase.from("transactions").insert([
       {
@@ -82,13 +87,12 @@ export default function AddTransactionPage() {
         count_packets: count,
         unit_price: unitPrice,
         total_price: total,
-        quantity_grams: quantityGrams, // ⭐ FIX
       },
     ]);
 
-    if (error) return showToast("Failed to add transaction");
+    if (error) return alert("Failed to add transaction");
 
-    showToast("Transaction added");
+    alert("Transaction added");
     router.push("/transactions");
   }
 
@@ -123,11 +127,14 @@ export default function AddTransactionPage() {
             </select>
           </div>
 
-          {/* INVENTORY PREVIEW */}
+          {/* STOCK PREVIEW */}
           {selectedProduct && (
             <div
               className="card p-4 fade-slide"
-              style={{ background: "#F8FAFF", borderColor: "#E1E8F5" }}
+              style={{
+                background: "#F8FAFF",
+                borderColor: "#E1E8F5",
+              }}
             >
               <div className="kicker mb-1">Available Stock</div>
 
@@ -178,42 +185,42 @@ export default function AddTransactionPage() {
             </select>
           </div>
 
-          {/* PACKETS */}
+          {/* ENTER PRICE PER KG */}
           <div>
-            <label className="kicker">No. of Packets</label>
+            <label className="kicker">Price per KG (₹)</label>
             <input
               type="number"
               min={1}
               className="input mt-1"
-              value={count}
-              onChange={(e) => setCount(Number(e.target.value))}
+              value={pricePerKg}
+              onChange={(e) => setPricePerKg(Number(e.target.value))}
+              placeholder="Ex: 210, 320 …"
             />
           </div>
 
-          {/* PRICE */}
-          <div>
-            <label className="kicker">Price per Packet (₹)</label>
-            <input
-              type="number"
-              min={1}
-              className="input mt-1"
-              value={unitPrice}
-              onChange={(e) => setUnitPrice(Number(e.target.value))}
-            />
-          </div>
-
-          {/* TOTAL PREVIEW */}
-          {count > 0 && unitPrice > 0 && (
+          {/* AUTO PRICE PREVIEW */}
+          {pricePerKg > 0 && (
             <div
               className="card p-4 fade-slide"
               style={{ background: "#F0F4FF", borderColor: "#D2DBF0" }}
             >
-              <div className="kicker">Total Amount</div>
+              <div className="kicker">Computed Price per Packet</div>
               <div
-                style={{ fontSize: 22, fontWeight: 700, color: "#164B8A" }}
+                style={{ fontSize: 18, fontWeight: 700, color: "#164B8A" }}
               >
-                ₹{count * unitPrice}
+                ₹{calculateUnitPrice().toFixed(2)}
               </div>
+
+              {count > 0 && (
+                <>
+                  <div className="kicker mt-2">Total Amount</div>
+                  <div
+                    style={{ fontSize: 22, fontWeight: 700, color: "#164B8A" }}
+                  >
+                    ₹{(count * calculateUnitPrice()).toFixed(2)}
+                  </div>
+                </>
+              )}
             </div>
           )}
 
@@ -236,7 +243,7 @@ export default function AddTransactionPage() {
                 setTxnType("purchase");
                 setPacketSize(250);
                 setCount(1);
-                setUnitPrice(0);
+                setPricePerKg(0);
               }}
             >
               Reset

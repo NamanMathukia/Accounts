@@ -169,6 +169,15 @@ textarea:focus {
   border-bottom: 1px solid #E5E7EB;
 }
 
+.table-scroll::-webkit-scrollbar {
+  height: 6px;
+}
+
+.table-scroll::-webkit-scrollbar-thumb {
+  background: #cdd8f0;
+  border-radius: 4px;
+}
+
 /* --------------------------- */
 /* SMALL TEXT                  */
 /* --------------------------- */
