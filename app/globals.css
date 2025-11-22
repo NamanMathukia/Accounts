@@ -41,46 +41,84 @@ body {
 /* --------------------------- */
 
 .card {
-  background: var(--card);
-  border: 1px solid var(--border);
-  border-radius: 14px;
-  padding: 16px;
-  box-shadow: var(--shadow);
+  background: #ffffff;
+  border: 1px solid #dce5f7;
+  border-radius: 18px;
+
+  padding: 22px;        /* 🔥 perfect spacing */
+  box-sizing: border-box;
+  overflow: hidden;     /* 🔥 stops inner content from escaping */
 }
 
 /* --------------------------- */
 /* BUTTONS                     */
 /* --------------------------- */
+/* ========================= */
+/* PRIMARY BUTTON            */
+/* ========================= */
 
 .btn-primary {
-  background: var(--accent);
+  background: var(--accent);          /* main blue */
   color: white;
-  padding: 12px 16px;
+  padding: 12px 20px;
   border-radius: 12px;
   font-weight: 600;
-  transition: 0.15s ease;
+  font-size: 16px;
+  border: none;
+
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+
+  width: auto;
+  max-width: 100%;                    /* avoids overflow */
+  box-sizing: border-box;             /* FIX for mobile layout */
+
+  transition: background 0.2s ease, transform 0.12s ease;
 }
 
 .btn-primary:hover {
-  background: #1E3A8A;
+  background: #1E3A8A;                /* darker blue */
 }
 
 .btn-primary:active {
-  transform: scale(0.97);
+  transform: scale(0.96);             /* subtle tap effect */
 }
+
+
+/* ========================= */
+/* SECONDARY BUTTON          */
+/* ========================= */
 
 .btn-secondary {
   background: white;
-  border: 1px solid var(--accent-light);
+  border: 1.5px solid var(--accent-light);
   color: var(--accent);
-  padding: 10px 14px;
+  padding: 10px 18px;
   border-radius: 12px;
-  transition: 0.15s ease;
+
+  font-size: 15px;
+  font-weight: 500;
+
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+
+  width: auto;
+  max-width: 100%;
+  box-sizing: border-box;
+
+  transition: background 0.2s ease, border-color 0.2s ease, transform 0.12s ease;
 }
 
 .btn-secondary:hover {
   background: var(--accent-light);
+  border-color: var(--accent-light);
   color: white;
+}
+
+.btn-secondary:active {
+  transform: scale(0.96);
 }
 
 /* --------------------------- */
@@ -91,12 +129,18 @@ body {
 select,
 textarea {
   width: 100%;
-  padding: 12px;
-  border-radius: 10px;
+  max-width: 100%;         /* prevent overflow */
+  box-sizing: border-box;  /* 🔥 mandatory fix */
+
+  padding: 14px 16px;
+  border-radius: 12px;
+
   border: 1px solid var(--border);
   background: #ffffff !important;
   color: var(--text) !important;
-  transition: border 0.15s ease;
+
+  font-size: 16px;
+  transition: border 0.15s ease, box-shadow 0.15s ease;
 }
 
 .input:focus,
@@ -198,6 +242,70 @@ body.sidebar-open .sidebar-drawer {
   color: var(--accent);
   font-size: 16px;
   font-weight: 500;
+}
+
+/* --------------------------- */
+/* MODERN SIDEBAR UI DESIGN    */
+/* --------------------------- */
+
+.fancy-sidebar {
+  background: #ffffff;
+  padding: 20px;
+  box-shadow: 4px 0 18px rgba(0, 0, 0, 0.12);
+  border-right: none;
+  border-radius: 0 12px 12px 0;
+}
+
+/* Title */
+.fancy-sidebar .sidebar-title {
+  font-size: 22px;
+  font-weight: 800;
+  color: #1a2b5c;
+  margin-bottom: 18px;
+}
+
+/* Items list */
+.sidebar-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+/* Each link */
+.sidebar-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 14px 18px;
+  background: #eef3ff;
+  border-radius: 10px;
+  font-size: 16px;
+  color: #1a3a74;
+  font-weight: 600;
+  text-decoration: none;
+  transition: 0.2s ease;
+  border: 1px solid #d9e3ff;
+}
+
+.sidebar-item:hover {
+  background: #dce8ff;
+  border-color: #b8cdff;
+}
+
+/* Icons */
+.sidebar-icon {
+  font-size: 18px;
+}
+
+/* Close button */
+.sidebar-close {
+  font-size: 22px;
+  background: #eef3ff;
+  color: #1a3a74;
+  border: 1px solid #d0dcff;
+  border-radius: 8px;
+  padding: 6px 8px;
+  margin-bottom: 18px;
 }
 
 /* --------------------------- */
