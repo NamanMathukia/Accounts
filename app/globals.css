@@ -378,3 +378,214 @@ body.sidebar-open .sidebar-drawer {
 .tap-scale:active {
   transform: scale(0.96);
 }
+/* ----------------------------------------- */
+/* LOGIN PAGE FULLSCREEN CLEAN UI FIX        */
+/* ----------------------------------------- */
+/* ----------------------------------------- */
+/* LOGIN PAGE CLEAN UI (FULLSCREEN)          */
+/* ----------------------------------------- */
+
+body.login-page {
+  background: var(--bg) !important;
+  margin: 0;
+  padding: 0;
+}
+
+body.login-page .layout-wrapper,
+body.login-page .topbar,
+body.login-page .sidebar-drawer,
+body.login-page .sidebar-overlay,
+body.login-page .main-content {
+  display: none !important;
+}
+
+/* Login page outer container */
+#login-container {
+  min-height: 100vh;
+  width: 100%;
+  display: flex !important;
+  justify-content: center;
+  align-items: center;
+  padding: 20px;
+  box-sizing: border-box;
+}
+
+/* Login card */
+.login-card {
+  width: 100%;
+  max-width: 400px;
+  background: white;
+  padding: 28px;
+  border-radius: 14px;
+  box-shadow: 0 8px 20px rgba(0,0,0,0.12);
+  animation: fadeIn .4s ease;
+}
+
+/* Title */
+.login-title {
+  text-align: center;
+  margin-bottom: 22px;
+  font-size: 26px;
+  font-weight: 700;
+}
+
+/* Input fields */
+.login-input {
+  width: 100%;
+  padding: 12px;
+  margin-bottom: 14px;
+  border-radius: 8px;
+  border: 1px solid var(--border);
+  font-size: 15px;
+  background: white;
+  box-sizing: border-box;
+}
+
+/* Submit button */
+.login-btn {
+  width: 100%;
+  padding: 12px;
+  border-radius: 8px;
+  background: #4F46E5;
+  color: white;
+  font-size: 16px;
+  font-weight: 600;
+  border: none;
+  cursor: pointer;
+  margin-bottom: 12px;
+}
+
+.login-btn:active {
+  transform: scale(0.97);
+}
+
+/* Toggle link text */
+.login-toggle {
+  text-align: center;
+  font-size: 14px;
+}
+
+.login-link {
+  color: #4F46E5;
+  font-weight: 600;
+  cursor: pointer;
+}
+.sidebar-avatar {
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  background: #eef3ff;
+  border: 2px solid #cdd6ff;
+  color: #1a3a74;
+  font-weight: 700;
+  font-size: 22px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 14px auto;
+
+  animation: softPulse 3s infinite ease-in-out;
+}
+
+@keyframes softPulse {
+  0%, 100% { box-shadow: 0 0 0 rgba(80,100,255,0.15); }
+  50% { box-shadow: 0 0 22px rgba(80,100,255,0.25); }
+}
+/* ------------------------------- */
+/* STABLE SIDEBAR SCROLLING SYSTEM */
+/* ------------------------------- */
+
+/* The scroll container */
+.sidebar-scroll {
+  flex: 1;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch; /* smooth mobile scroll */
+  padding-bottom: 20px;
+  margin-top: 12px;
+}
+
+/* To ensure drawer uses full height */
+.sidebar-drawer {
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+}
+.toast-popup {
+  position: fixed;
+  bottom: 28px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: #164b8a;
+  color: white;
+  padding: 12px 20px;
+  border-radius: 12px;
+  font-size: 15px;
+  font-weight: 500;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+  z-index: 9999;
+  max-width: 85%;
+  text-align: center;
+}
+
+/* Logo Styling — Dashboard Branding */
+.app-logo {
+  height: 32px;
+  width: 32px;
+  border-radius: 8px;
+  object-fit: cover;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.15);
+  background: transparent;
+}
+
+/* Title */
+.app-title {
+  font-size: 24px;
+  font-weight: 700;
+  color: var(--text);
+}
+
+/* Topbar Alignment Fix */
+.topbar {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 20px;
+}
+
+/* ---------------------------- */
+/* Improved Topbar Styling      */
+/* ---------------------------- */
+
+.enhanced-topbar {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  margin-bottom: 28px;
+  padding: 0 4px;
+}
+
+.app-brand {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.app-logo {
+  height: 38px;
+  width: 38px;
+  border-radius: 10px;
+  box-shadow: 0 3px 8px rgba(0,0,0,0.15);
+  transition: transform .2s ease, box-shadow .2s ease;
+}
+
+.app-logo:hover {
+  transform: scale(1.06);
+  box-shadow: 0 5px 14px rgba(0,0,0,0.2);
+}
+
+.app-title {
+  font-size: 26px;
+  font-weight: 700;
+  color: var(--accent);
+}

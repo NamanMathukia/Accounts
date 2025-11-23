@@ -24,9 +24,19 @@ export default function TransactionsPage() {
   }, []);
 
   async function loadTxns() {
+    // 🔥 1. GET USER
+    const {
+      data: { session },
+    } = await supabase.auth.getSession();
+
+    const user_id = session?.user?.id;
+    if (!user_id) return;
+
+    // 🔥 2. FILTER BY USER (RLS requirement)
     const { data: tx } = await supabase
       .from("transactions")
       .select("*, products(name)")
+      .eq("user_id", user_id)
       .order("created_at", { ascending: false });
 
     if (!tx) {
@@ -34,7 +44,7 @@ export default function TransactionsPage() {
       return;
     }
 
-    // Normalize and attach product name
+    // Normalize
     const normalized = (tx as any[]).map((t) => ({
       id: t.id,
       product_id: t.product_id,
@@ -42,8 +52,8 @@ export default function TransactionsPage() {
       txn_type: t.txn_type,
       count_packets: t.count_packets,
       packet_size_grams: t.packet_size_grams,
-      unit_price: t.unit_price,
-      total_price: t.total_price,
+      unit_price: Number(t.unit_price),
+      total_price: Number(t.total_price),
       created_at: t.created_at,
     })) as Txn[];
 
@@ -53,6 +63,7 @@ export default function TransactionsPage() {
   async function deleteTxn(t: Txn) {
     if (!confirm("Delete this transaction?")) return;
 
+    // 🔥 Reverse packet effect before delete
     await supabase.rpc("update_packets_on_transaction", {
       p_id: t.product_id,
       t_type: t.txn_type === "purchase" ? "sale" : "purchase",
@@ -60,6 +71,7 @@ export default function TransactionsPage() {
       pkt_count: t.count_packets,
     });
 
+    // 🔥 Delete via API route (uses service_role)
     const res = await fetch("/api/delete-transaction", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
@@ -67,7 +79,8 @@ export default function TransactionsPage() {
     });
 
     if (!res.ok) {
-      alert("Failed to delete");
+      const e = await res.json();
+      alert("Failed: " + e.error);
       return;
     }
 
@@ -89,12 +102,12 @@ export default function TransactionsPage() {
       >
         <table
           className="table w-full"
-          style={{ minWidth: "750px" }} // extra width for product column
+          style={{ minWidth: "750px" }}
         >
           <thead>
             <tr>
               <th className="p-3">Date</th>
-              <th className="p-3">Product</th>   {/* NEW COLUMN */}
+              <th className="p-3">Product</th>
               <th className="p-3">Type</th>
               <th className="p-3">Packets</th>
               <th className="p-3">Unit</th>
@@ -108,7 +121,6 @@ export default function TransactionsPage() {
               <tr key={t.id} className="border-b hover:bg-white/5">
                 <td className="p-3">{new Date(t.created_at).toLocaleString()}</td>
 
-                {/* NEW PRODUCT NAME CELL */}
                 <td className="p-3 font-semibold">{t.product_name}</td>
 
                 <td className="p-3 capitalize">{t.txn_type}</td>

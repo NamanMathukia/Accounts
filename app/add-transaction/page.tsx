@@ -34,9 +34,18 @@ export default function AddTransactionPage() {
   }, []);
 
   async function loadProducts() {
+    // 🔥 Required for RLS
+    const {
+      data: { session },
+    } = await supabase.auth.getSession();
+
+    if (!session?.user?.id) return;
+
+    // 🔥 Filter only the logged-in user's products
     const { data } = await supabase
       .from("products")
       .select("id, name, stock_packets_250, stock_packets_500")
+      .eq("user_id", session.user.id)
       .order("name");
 
     setProducts((data || []) as Product[]);
@@ -49,52 +58,65 @@ export default function AddTransactionPage() {
   }
 
   // ------------------------------
-  // OLD FORMAT — API CALL
+  // OLD FORMAT — API CALL (KEPT SAME)
   // ------------------------------
   async function addTxn() {
-    if (!productId) return alert("Select a product");
-    if (!pricePerKg || pricePerKg <= 0) return alert("Enter valid price per KG");
+  if (!productId) return alert("Select a product");
+  if (!pricePerKg || pricePerKg <= 0) return alert("Enter valid price per KG");
 
-    const unitPrice = (pricePerKg / 1000) * packetSize;
-    const totalPrice = unitPrice * count;
+  const unitPrice = (pricePerKg / 1000) * packetSize;
+  const totalPrice = unitPrice * count;
 
-    // Prevent sale if no stock
-    if (txnType === "sale") {
-      const available =
-        packetSize === 500
-          ? selectedProduct?.stock_packets_500 || 0
-          : selectedProduct?.stock_packets_250 || 0;
+  // Prevent sale if no stock
+  if (txnType === "sale") {
+    const available =
+      packetSize === 500
+        ? selectedProduct?.stock_packets_500 || 0
+        : selectedProduct?.stock_packets_250 || 0;
 
-      if (available < count) {
-        return alert(
-          `Not enough stock.\nAvailable: ${available}\nRequested: ${count}`
-        );
-      }
+    if (available < count) {
+      return alert(
+        `Not enough stock.\nAvailable: ${available}\nRequested: ${count}`
+      );
     }
-
-    // OLD API FORMAT (RESTORED)
-    const res = await fetch("/api/transaction", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        productId,
-        txnType,
-        packetSize,
-        count,
-        unitPrice,       // <-- per packet (auto calc)
-        totalPrice       // <-- per packet × count
-      }),
-    });
-
-    if (!res.ok) {
-      const e = await res.json();
-      alert("Failed: " + e.error);
-      return;
-    }
-
-    alert("Transaction added");
-    router.push("/transactions");
   }
+
+  // ⭐ MUST include user session token for RLS
+  const {
+    data: { session },
+  } = await supabase.auth.getSession();
+
+  if (!session?.access_token) {
+    alert("Not logged in");
+    return;
+  }
+
+  const res = await fetch("/api/transaction", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${session.access_token}`, // ⭐ REQUIRED
+    },
+    body: JSON.stringify({
+      productId,
+      txnType,
+      packetSize,
+      count,
+      unitPrice,
+      totalPrice,
+    }),
+  });
+
+  if (!res.ok) {
+    const e = await res.json();
+    alert("Failed: " + e.error);
+    return;
+  }
+
+  alert("Transaction added");
+  router.push("/transactions");
+}
+
 
   // ------------------------------
   // UTILS
@@ -112,7 +134,6 @@ export default function AddTransactionPage() {
         </h2>
 
         <div className="space-y-6">
-
           {/* Product */}
           <div>
             <label className="kicker">Product</label>

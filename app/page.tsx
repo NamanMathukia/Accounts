@@ -16,7 +16,7 @@ export default function DashboardPage() {
   const [products, setProducts] = useState<Product[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
 
-  const { showToast } = useToast();  // ✔ Toast included
+  const { showToast } = useToast();
 
   useEffect(() => {
     load();
@@ -25,9 +25,23 @@ export default function DashboardPage() {
   async function load() {
     setLoading(true);
 
+    // 🔥 1. Fetch session
+    const {
+      data: { session },
+    } = await supabase.auth.getSession();
+
+    const user_id = session?.user?.id;
+    if (!user_id) {
+      showToast("User not logged in");
+      setLoading(false);
+      return;
+    }
+
+    // 🔥 2. RLS: Filter by user_id
     const { data, error } = await supabase
       .from("products")
       .select("id, name, default_unit_grams, stock_packets_250, stock_packets_500")
+      .eq("user_id", user_id)
       .order("name", { ascending: true });
 
     if (error) {
@@ -57,14 +71,17 @@ export default function DashboardPage() {
 
   return (
     <div className="fade">
-
       {/* Title */}
       <div className="mb-5">
-        <h1 style={{ fontSize: 28, fontWeight: 700, color: "var(--text)" }}>Inventory</h1>
-        <p className="kicker" style={{ marginTop: 2 }}>Current stock overview</p>
+        <h1 style={{ fontSize: 28, fontWeight: 700, color: "var(--text)" }}>
+          Inventory
+        </h1>
+        <p className="kicker" style={{ marginTop: 2 }}>
+          Current stock overview
+        </p>
       </div>
 
-      {/* Loading Skeleton */}
+      {/* Skeleton Loading */}
       {loading && (
         <div className="space-y-4">
           <div className="card p-4 pulse" style={{ height: 90 }} />
@@ -95,7 +112,9 @@ export default function DashboardPage() {
             >
               <div>
                 <div style={{ fontWeight: 700, fontSize: 18 }}>{p.name}</div>
-                <div className="kicker">Default Size: {p.default_unit_grams} g</div>
+                <div className="kicker">
+                  Default Size: {p.default_unit_grams} g
+                </div>
               </div>
 
               <div style={{ textAlign: "right", minWidth: 130 }}>

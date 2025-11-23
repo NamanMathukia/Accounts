@@ -15,17 +15,31 @@ export default function AddProductPage() {
   async function addProduct() {
     if (!name.trim()) return showToast("Product name required");
 
+    // 🔥 Get logged-in user (required for RLS)
+    const {
+      data: { session },
+    } = await supabase.auth.getSession();
+
+    if (!session?.user?.id) {
+      return showToast("Not logged in");
+    }
+
+    // 🔥 Insert product WITH user_id
     const { data, error } = await supabase
       .from("products")
-      .insert([{ name, default_unit_grams: unit }])
+      .insert([
+        {
+          name,
+          default_unit_grams: unit,
+          user_id: session.user.id, // REQUIRED
+        },
+      ])
       .select();
 
-    if (error) return showToast("Error adding product");
-
-    // Create inventory row
-    await supabase.from("inventory").insert([
-      { product_id: data[0].id, stock_grams: 0 },
-    ]);
+    if (error) {
+      console.error(error);
+      return showToast("Error adding product");
+    }
 
     showToast("Product added");
     router.push("/");

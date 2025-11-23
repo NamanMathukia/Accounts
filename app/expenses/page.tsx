@@ -8,23 +8,33 @@ export default function ExpensesPage() {
   const [category, setCategory] = useState("");
   const [amount, setAmount] = useState<number | "">("");
   const [note, setNote] = useState("");
-type Expense = {
-  id: string;
-  title: string;
-  amount: number;
-  created_at: string;
-};
 
-const [expenses, setExpenses] = useState<Expense[]>([]);
+  type Expense = {
+    id: string;
+    category: string;
+    amount: number;
+    note: string | null;
+    created_at: string;
+  };
+
+  const [expenses, setExpenses] = useState<Expense[]>([]);
 
   useEffect(() => {
     loadExpenses();
   }, []);
 
   async function loadExpenses() {
+    // 🔥 Required for RLS filtering
+    const {
+      data: { session },
+    } = await supabase.auth.getSession();
+
+    if (!session?.user?.id) return;
+
     const { data, error } = await supabase
       .from("expenses")
       .select("*")
+      .eq("user_id", session.user.id) // 🔥 filter by user
       .order("created_at", { ascending: false });
 
     if (!error) setExpenses(data || []);
@@ -36,11 +46,22 @@ const [expenses, setExpenses] = useState<Expense[]>([]);
       return;
     }
 
+    // 🔥 required for RLS
+    const {
+      data: { session },
+    } = await supabase.auth.getSession();
+
+    if (!session?.user?.id) {
+      alert("Not logged in");
+      return;
+    }
+
     const { error } = await supabase.from("expenses").insert([
       {
         category,
         amount,
         note: note.trim() || null,
+        user_id: session.user.id, // 🔥 required
       },
     ]);
 
@@ -57,10 +78,18 @@ const [expenses, setExpenses] = useState<Expense[]>([]);
   }
 
   async function deleteExpense(id: string) {
+    // 🔥 must verify user for delete
+    const {
+      data: { session },
+    } = await supabase.auth.getSession();
+
+    if (!session?.user?.id) return;
+
     const { error } = await supabase
       .from("expenses")
       .delete()
-      .eq("id", id);
+      .eq("id", id)
+      .eq("user_id", session.user.id); // 🔥 enforce RLS
 
     if (error) {
       alert(error.message);
@@ -142,7 +171,9 @@ const [expenses, setExpenses] = useState<Expense[]>([]);
         ))}
 
         {expenses.length === 0 && (
-          <div className="card p-4 kicker text-center">No expenses added yet…</div>
+          <div className="card p-4 kicker text-center">
+            No expenses added yet…
+          </div>
         )}
       </div>
     </div>

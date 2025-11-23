@@ -5,60 +5,82 @@ import { supabase } from "../../lib/supabaseClient";
 import ConfirmButton from "../components/ConfirmButton";
 
 export default function ConvertPage() {
-type Product = {
-  id: string;
-  name: string;
-  stock_packets_250: number;
-  stock_packets_500: number;
-};
+  type Product = {
+    id: string;
+    name: string;
+    stock_packets_250: number;
+    stock_packets_500: number;
+  };
 
-const [products, setProducts] = useState<Product[]>([]);
+  const [products, setProducts] = useState<Product[]>([]);
   const [productId, setProductId] = useState("");
   const [direction, setDirection] = useState("500to250");
   const [count, setCount] = useState(1);
-  const [selected, setSelected] = useState<any>(null);
+  const [selected, setSelected] = useState<Product | null>(null);
 
   const [errorMsg, setErrorMsg] = useState("");
   const [successMsg, setSuccessMsg] = useState("");
 
-  // Load all products
+  // --------------------------------------------------------------------
+  // LOAD USER ID (Needed for RPC & RLS)
+  // --------------------------------------------------------------------
+  const [userId, setUserId] = useState<string | null>(null);
+
   useEffect(() => {
-    loadProducts();
+    async function fetchUser() {
+      const {
+        data: { session },
+      } = await supabase.auth.getSession();
+
+      if (session?.user?.id) setUserId(session.user.id);
+    }
+    fetchUser();
   }, []);
 
+  // --------------------------------------------------------------------
+  // LOAD ALL PRODUCTS FOR THIS USER
+  // --------------------------------------------------------------------
+  useEffect(() => {
+    if (!userId) return;
+    loadProducts();
+  }, [userId]);
+
   async function loadProducts() {
-    const { data } = await supabase
+    const { data, error } = await supabase
       .from("products")
-      .select("id, name, stock_packets_250, stock_packets_500");
-    setProducts(data || []);
+      .select("id, name, stock_packets_250, stock_packets_500")
+      .eq("user_id", userId); // 🟢 Filter by user
+
+    if (!error) setProducts(data || []);
   }
 
-  // Load selected product’s data
+  // --------------------------------------------------------------------
+  // Handle product selection
+  // --------------------------------------------------------------------
   function updateSelected(id: string) {
     setProductId(id);
-    const found = products.find((p: any) => p.id === id);
-    setSelected(found || null);
+    const prod = products.find((p) => p.id === id) || null;
+    setSelected(prod);
     setErrorMsg("");
     setSuccessMsg("");
   }
 
-  // Validate before converting
-  function validate(): boolean {
+  // --------------------------------------------------------------------
+  // Validate stock before conversion
+  // --------------------------------------------------------------------
+  function validate() {
     if (!selected) return false;
-    const p = selected;
 
-    // 500g → 250g (1 => 2)
     if (direction === "500to250") {
-      if (count > p.stock_packets_500) {
-        setErrorMsg("Not enough 500g packets available.");
+      if (count > selected.stock_packets_500) {
+        setErrorMsg("Not enough 500g packets.");
         return false;
       }
     }
 
-    // 250g → 500g (2 => 1)
     if (direction === "250to500") {
-      if (count * 2 > p.stock_packets_250) {
-        setErrorMsg("Not enough 250g packets available.");
+      if (count * 2 > selected.stock_packets_250) {
+        setErrorMsg("Not enough 250g packets.");
         return false;
       }
     }
@@ -67,7 +89,9 @@ const [products, setProducts] = useState<Product[]>([]);
     return true;
   }
 
-  // Perform conversion through RPC
+  // --------------------------------------------------------------------
+  // Perform the conversion using RPC
+  // --------------------------------------------------------------------
   async function convert() {
     if (!validate()) return;
 
@@ -75,6 +99,7 @@ const [products, setProducts] = useState<Product[]>([]);
       p_id: productId,
       convert_dir: direction,
       qty: count,
+      p_user_id: userId, // 🟢 Required for RLS
     });
 
     if (error) {
@@ -83,44 +108,44 @@ const [products, setProducts] = useState<Product[]>([]);
     }
 
     setSuccessMsg("Conversion successful!");
-    setErrorMsg("");
-
-    // Refresh product list + selected product state
     await loadProducts();
     updateSelected(productId);
   }
 
   return (
-    <div className="card p-5">
+    <div className="card p-5 fade-slide">
       <h2 className="text-xl font-bold mb-4">Convert Packets</h2>
 
       {/* Product Dropdown */}
       <label className="kicker">Product</label>
       <select
-        className="input mb-4 select-dark"
+        className="input mb-4"
         value={productId}
         onChange={(e) => updateSelected(e.target.value)}
       >
         <option value="">Select product</option>
-        {products.map((p: any) => (
+
+        {products.map((p) => (
           <option key={p.id} value={p.id}>
             {p.name}
           </option>
         ))}
       </select>
 
-      {/* Stock display */}
+      {/* Stock Display */}
       {selected && (
-        <div className="mb-4 text-sm kicker">
+        <div className="mb-4 kicker">
           <div>Available stock:</div>
+
           <div className="mt-1">
-            <span className="text-cyan-300 font-semibold">
+            <span className="text-blue-600 font-semibold">
               {selected.stock_packets_500}
             </span>{" "}
             × 500g
           </div>
+
           <div>
-            <span className="text-cyan-300 font-semibold">
+            <span className="text-blue-600 font-semibold">
               {selected.stock_packets_250}
             </span>{" "}
             × 250g
@@ -128,10 +153,10 @@ const [products, setProducts] = useState<Product[]>([]);
         </div>
       )}
 
-      {/* Conversion Direction */}
+      {/* Conversion Type */}
       <label className="kicker">Conversion Type</label>
       <select
-        className="input mb-4 select-dark"
+        className="input mb-4"
         value={direction}
         onChange={(e) => {
           setDirection(e.target.value);
@@ -157,25 +182,24 @@ const [products, setProducts] = useState<Product[]>([]);
         }}
       />
 
-      {/* Error Message */}
+      {/* Error */}
       {errorMsg && (
-        <div className="text-red-400 mb-3 font-semibold">{errorMsg}</div>
+        <div className="text-red-500 font-semibold mb-3">{errorMsg}</div>
       )}
 
-      {/* Success Message */}
+      {/* Success */}
       {successMsg && (
-        <div className="text-green-400 mb-3 font-semibold">{successMsg}</div>
+        <div className="text-green-500 font-semibold mb-3">{successMsg}</div>
       )}
 
-      {/* Convert Button */}
+      {/* Button */}
       <ConfirmButton
-  className="btn-primary w-full"
-  message="Are you sure you want to convert packets?"
-  onClick={convert}
->
-  Convert Packets
-</ConfirmButton>
-
+        className="btn-primary w-full"
+        message="Convert packets?"
+        onClick={convert}
+      >
+        Convert Packets
+      </ConfirmButton>
     </div>
   );
 }

@@ -42,15 +42,34 @@ export default function FinancialsPage() {
   }, []);
 
   async function load() {
-    // --- Load Transactions ---
+    // 🔥 GET USER SESSION
+    const {
+      data: { session },
+    } = await supabase.auth.getSession();
+
+    if (!session?.user?.id) return;
+
+    const user_id = session.user.id;
+
+    // -------------------------------
+    // 🔥 Load Transactions (RLS-safe)
+    // -------------------------------
     const { data: tx } = await supabase
       .from("transactions")
       .select("*, products(name)")
+      .eq("user_id", user_id)            // ⭐ Required
       .order("created_at", { ascending: false });
 
     if (!tx) return;
 
-    const { data: prods } = await supabase.from("products").select("id,name");
+    // -------------------------------
+    // 🔥 Load Products (to map names)
+    // -------------------------------
+    const { data: prods } = await supabase
+      .from("products")
+      .select("id, name")
+      .eq("user_id", user_id);          // ⭐ Required
+
     const prodMap: Record<string, string> = {};
     (prods || []).forEach((p: any) => (prodMap[p.id] = p.name));
 
@@ -67,10 +86,13 @@ export default function FinancialsPage() {
 
     setTxns(normalized);
 
-    // --- Load Expenses ---
+    // -------------------------------
+    // 🔥 Load Expenses (RLS-safe)
+    // -------------------------------
     const { data: exp } = await supabase
       .from("expenses")
       .select("*")
+      .eq("user_id", user_id)           // ⭐ Required
       .order("created_at", { ascending: false });
 
     const expenseList = exp || [];
@@ -81,7 +103,9 @@ export default function FinancialsPage() {
       0
     );
 
-    // --- Compute financial summary ---
+    // -------------------------------
+    // 🔥 Compute Summary
+    // -------------------------------
     let revenue = 0,
       cost = 0;
     const bp: Record<string, any> = {};
