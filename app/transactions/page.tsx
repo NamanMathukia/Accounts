@@ -60,32 +60,46 @@ export default function TransactionsPage() {
     setTxns(normalized);
   }
 
-  async function deleteTxn(t: Txn) {
-    if (!confirm("Delete this transaction?")) return;
+async function deleteTxn(t: Txn) {
+  if (!confirm("Delete this transaction?")) return;
 
-    // 🔥 Reverse packet effect before delete
-    await supabase.rpc("update_packets_on_transaction", {
-      p_id: t.product_id,
-      t_type: t.txn_type === "purchase" ? "sale" : "purchase",
-      pkt_size: t.packet_size_grams,
-      pkt_count: t.count_packets,
-    });
+  // ✅ Get logged-in user's ID
+  const {
+    data: { session },
+  } = await supabase.auth.getSession();
 
-    // 🔥 Delete via API route (uses service_role)
-    const res = await fetch("/api/delete-transaction", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ id: t.id }),
-    });
-
-    if (!res.ok) {
-      const e = await res.json();
-      alert("Failed: " + e.error);
-      return;
-    }
-
-    loadTxns();
+  const user_id = session?.user?.id;
+  if (!user_id) {
+    alert("Not logged in");
+    return;
   }
+
+  // 🔄 Reverse inventory first
+  await supabase.rpc("update_packets_on_transaction", {
+    p_id: t.product_id,
+    t_type: t.txn_type === "purchase" ? "sale" : "purchase",
+    pkt_size: t.packet_size_grams,
+    pkt_count: t.count_packets,
+  });
+
+  // ❌ Your old request did NOT send user_id
+  const res = await fetch("/api/delete-transaction", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({
+      id: t.id,
+      user_id,   // ✅ REQUIRED
+    }),
+  });
+
+  if (!res.ok) {
+    const { error } = await res.json();
+    alert("Failed: " + error);
+    return;
+  }
+
+  loadTxns();
+}
 
   return (
     <div className="card p-4">

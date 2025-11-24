@@ -62,7 +62,7 @@ export default function AddTransactionPage() {
   // ------------------------------
   async function addTxn() {
   if (!productId) return alert("Select a product");
-  if (!pricePerKg || pricePerKg <= 0) return alert("Enter valid price per KG");
+  if (!pricePerKg || pricePerKg <= -1) return alert("Enter valid price per KG");
 
   const unitPrice = (pricePerKg / 1000) * packetSize;
   const totalPrice = unitPrice * count;
