@@ -289,25 +289,184 @@ export default function AddTransactionPage() {
           {/* Count */}
           <div>
             <label className="kicker">Packets</label>
-            <input
-              type="number"
-              min={1}
-              className="input mt-1"
-              value={count}
-              onChange={(e) => setCount(Number(e.target.value))}
-            />
+            <div style={{ display: "flex", gap: "8px", marginTop: "4px" }}>
+              <button
+                type="button"
+                onClick={() => setCount(Math.max(1, count - 1))}
+                style={{
+                  width: "48px",
+                  height: "48px",
+                  borderRadius: "12px",
+                  border: "1px solid var(--border)",
+                  background: "#ffffff",
+                  fontSize: "20px",
+                  fontWeight: "600",
+                  color: "var(--text)",
+                  cursor: "pointer",
+                  transition: "all 0.2s ease",
+                }}
+                onMouseEnter={(e) => {
+                  e.currentTarget.style.background = "#F8FAFF";
+                  e.currentTarget.style.borderColor = "#164B8A";
+                }}
+                onMouseLeave={(e) => {
+                  e.currentTarget.style.background = "#ffffff";
+                  e.currentTarget.style.borderColor = "var(--border)";
+                }}
+              >
+                −
+              </button>
+              <input
+                type="number"
+                min={1}
+                className="input"
+                style={{
+                  flex: 1,
+                  textAlign: "center",
+                  fontSize: "18px",
+                  fontWeight: "600",
+                }}
+                value={count}
+                onChange={(e) => setCount(Math.max(1, Number(e.target.value) || 1))}
+              />
+              <button
+                type="button"
+                onClick={() => setCount(count + 1)}
+                style={{
+                  width: "48px",
+                  height: "48px",
+                  borderRadius: "12px",
+                  border: "1px solid var(--border)",
+                  background: "#ffffff",
+                  fontSize: "20px",
+                  fontWeight: "600",
+                  color: "var(--text)",
+                  cursor: "pointer",
+                  transition: "all 0.2s ease",
+                }}
+                onMouseEnter={(e) => {
+                  e.currentTarget.style.background = "#F8FAFF";
+                  e.currentTarget.style.borderColor = "#164B8A";
+                }}
+                onMouseLeave={(e) => {
+                  e.currentTarget.style.background = "#ffffff";
+                  e.currentTarget.style.borderColor = "var(--border)";
+                }}
+              >
+                +
+              </button>
+            </div>
           </div>
 
           {/* Price per KG */}
           <div>
             <label className="kicker">Price per KG (₹)</label>
-            <input
-              type="number"
-              min={0}
-              className="input mt-1"
-              value={pricePerKg}
-              onChange={(e) => setPricePerKg(Number(e.target.value))}
-            />
+
+            {/* Quick preset buttons */}
+            <div style={{ display: "flex", gap: "8px", marginTop: "8px", marginBottom: "8px" }}>
+              {[100, 200, 300, 500].map((preset) => (
+                <button
+                  key={preset}
+                  type="button"
+                  onClick={() => setPricePerKg(preset)}
+                  style={{
+                    flex: 1,
+                    padding: "8px 12px",
+                    borderRadius: "8px",
+                    border: "1px solid var(--border)",
+                    background: pricePerKg === preset ? "#164B8A" : "#ffffff",
+                    color: pricePerKg === preset ? "#ffffff" : "var(--text)",
+                    fontSize: "14px",
+                    fontWeight: "500",
+                    cursor: "pointer",
+                    transition: "all 0.2s ease",
+                  }}
+                  onMouseEnter={(e) => {
+                    if (pricePerKg !== preset) {
+                      e.currentTarget.style.background = "#F8FAFF";
+                      e.currentTarget.style.borderColor = "#164B8A";
+                    }
+                  }}
+                  onMouseLeave={(e) => {
+                    if (pricePerKg !== preset) {
+                      e.currentTarget.style.background = "#ffffff";
+                      e.currentTarget.style.borderColor = "var(--border)";
+                    }
+                  }}
+                >
+                  ₹{preset}
+                </button>
+              ))}
+            </div>
+
+            <div style={{ display: "flex", gap: "8px" }}>
+              <button
+                type="button"
+                onClick={() => setPricePerKg(Math.max(0, pricePerKg - 10))}
+                style={{
+                  width: "48px",
+                  height: "48px",
+                  borderRadius: "12px",
+                  border: "1px solid var(--border)",
+                  background: "#ffffff",
+                  fontSize: "20px",
+                  fontWeight: "600",
+                  color: "var(--text)",
+                  cursor: "pointer",
+                  transition: "all 0.2s ease",
+                }}
+                onMouseEnter={(e) => {
+                  e.currentTarget.style.background = "#F8FAFF";
+                  e.currentTarget.style.borderColor = "#164B8A";
+                }}
+                onMouseLeave={(e) => {
+                  e.currentTarget.style.background = "#ffffff";
+                  e.currentTarget.style.borderColor = "var(--border)";
+                }}
+              >
+                −
+              </button>
+              <input
+                type="number"
+                min={0}
+                step={10}
+                className="input"
+                style={{
+                  flex: 1,
+                  textAlign: "center",
+                  fontSize: "18px",
+                  fontWeight: "600",
+                }}
+                value={pricePerKg}
+                onChange={(e) => setPricePerKg(Math.max(0, Number(e.target.value) || 0))}
+              />
+              <button
+                type="button"
+                onClick={() => setPricePerKg(pricePerKg + 10)}
+                style={{
+                  width: "48px",
+                  height: "48px",
+                  borderRadius: "12px",
+                  border: "1px solid var(--border)",
+                  background: "#ffffff",
+                  fontSize: "20px",
+                  fontWeight: "600",
+                  color: "var(--text)",
+                  cursor: "pointer",
+                  transition: "all 0.2s ease",
+                }}
+                onMouseEnter={(e) => {
+                  e.currentTarget.style.background = "#F8FAFF";
+                  e.currentTarget.style.borderColor = "#164B8A";
+                }}
+                onMouseLeave={(e) => {
+                  e.currentTarget.style.background = "#ffffff";
+                  e.currentTarget.style.borderColor = "var(--border)";
+                }}
+              >
+                +
+              </button>
+            </div>
           </div>
 
           {/* Total Preview */}
