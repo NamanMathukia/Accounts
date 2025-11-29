@@ -38,30 +38,8 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
   // -----------------------------
   // 2️⃣ Insert into transactions WITH user_id (RLS requirement)
   // -----------------------------
-  const { data: inserted, error: insertErr } = await supabaseAdmin
-    .from("transactions")
-    .insert([
-      {
-        product_id: productId,
-        txn_type: txnType,
-        quantity_grams: qty,
-        packet_size_grams: Number(packetSize),
-        count_packets: Number(count),
-        unit_price: Number(unitPrice),
-        total_price: total,
-        notes: null,
-        user_id: user.id  // ⭐ REQUIRED for RLS
-      }
-    ])
-    .select("id");
-
-  if (insertErr) {
-    console.error(insertErr);
-    return res.status(500).json({ error: insertErr.message });
-  }
-
   // -----------------------------
-  // 3️⃣ Call RPC to update product stock (does not touch user_id)
+  // 2️⃣ Call RPC to insert transaction AND update product stock
   // -----------------------------
   const { error: rpcErr } = await supabaseAdmin.rpc(
     "insert_transaction_and_update_inventory",
@@ -73,6 +51,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       p_count_packets: Number(count),
       p_unit_price: Number(unitPrice),
       p_total_price: total,
+      p_user_id: user.id, // ⭐ Passed to RPC
       p_notes: null
     }
   );
