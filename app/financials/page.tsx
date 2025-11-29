@@ -13,6 +13,7 @@ type Txn = {
   unit_price: number;
   total_price: number;
   created_at: string;
+  payment_status?: string;
 };
 
 type Expense = {
@@ -31,10 +32,11 @@ export default function FinancialsPage() {
     cost: 0,
     expenses: 0,
     profit: 0,
+    pendingReceivables: 0,
   });
 
   const [byProduct, setByProduct] = useState<
-    Record<string, { name: string; revenue: number; cost: number; profit: number }>
+    Record<string, { name: string; revenue: number; cost: number; profit: number; pending: number }>
   >({});
 
   useEffect(() => {
@@ -82,6 +84,7 @@ export default function FinancialsPage() {
       unit_price: Number(t.unit_price),
       total_price: Number(t.total_price),
       created_at: t.created_at,
+      payment_status: t.payment_status,
     })) as Txn[];
 
     setTxns(normalized);
@@ -107,18 +110,26 @@ export default function FinancialsPage() {
     // 🔥 Compute Summary
     // -------------------------------
     let revenue = 0,
-      cost = 0;
+      cost = 0,
+      pendingReceivables = 0;
     const bp: Record<string, any> = {};
 
     normalized.forEach((t) => {
       const pid = t.product_id;
       const name = prodMap[pid] || "Unknown";
 
-      if (!bp[pid]) bp[pid] = { name, revenue: 0, cost: 0 };
+      if (!bp[pid]) bp[pid] = { name, revenue: 0, cost: 0, pending: 0 };
 
       if (t.txn_type === "sale") {
-        revenue += t.total_price;
-        bp[pid].revenue += t.total_price;
+        // Only count PAID sales as revenue
+        if (t.payment_status === "paid") {
+          revenue += t.total_price;
+          bp[pid].revenue += t.total_price;
+        } else {
+          // Track pending (lend/udhaar) separately
+          pendingReceivables += t.total_price;
+          bp[pid].pending += t.total_price;
+        }
       } else {
         cost += t.total_price;
         bp[pid].cost += t.total_price;
@@ -131,7 +142,7 @@ export default function FinancialsPage() {
 
     const profit = revenue - cost - totalExpenses;
 
-    setSummary({ revenue, cost, expenses: totalExpenses, profit });
+    setSummary({ revenue, cost, expenses: totalExpenses, profit, pendingReceivables });
     setByProduct(bp);
   }
 
@@ -142,7 +153,8 @@ export default function FinancialsPage() {
 
       {/* Summary Cards */}
       <div className="grid grid-cols-1 gap-3 mb-4">
-        <StatCard title="Total Revenue" value={`₹${summary.revenue.toFixed(2)}`} className="fade" />
+        <StatCard title="Total Revenue (Paid)" value={`₹${summary.revenue.toFixed(2)}`} className="fade" />
+        <StatCard title="Pending Receivables (Udhaar)" value={`₹${summary.pendingReceivables.toFixed(2)}`} className="fade" />
         <StatCard title="Total Cost" value={`₹${summary.cost.toFixed(2)}`} className="fade" />
         <StatCard title="Total Expenses" value={`₹${summary.expenses.toFixed(2)}`} className="fade" />
         <StatCard title="Net Profit" value={`₹${summary.profit.toFixed(2)}`} className="fade" />
@@ -164,8 +176,10 @@ export default function FinancialsPage() {
               <div>
                 <div style={{ fontWeight: 700 }}>{obj.name}</div>
                 <div className="kicker">
-                  Revenue: ₹{obj.revenue.toFixed(2)} • Cost: ₹
-                  {obj.cost.toFixed(2)}
+                  Revenue: ₹{obj.revenue.toFixed(2)} • Cost: ₹{obj.cost.toFixed(2)}
+                  {obj.pending > 0 && (
+                    <span style={{ color: "#F59E0B" }}> • Pending: ₹{obj.pending.toFixed(2)}</span>
+                  )}
                 </div>
               </div>
 

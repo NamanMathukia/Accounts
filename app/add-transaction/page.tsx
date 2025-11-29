@@ -24,6 +24,10 @@ export default function AddTransactionPage() {
   // price per KG (NEW)
   const [pricePerKg, setPricePerKg] = useState<number>(0);
 
+  // Sale-specific fields
+  const [customerName, setCustomerName] = useState<string>("");
+  const [paymentMethod, setPaymentMethod] = useState<"cash" | "gpay" | "lend">("cash");
+
   const router = useRouter();
 
   // ------------------------------
@@ -61,60 +65,67 @@ export default function AddTransactionPage() {
   // OLD FORMAT — API CALL (KEPT SAME)
   // ------------------------------
   async function addTxn() {
-  if (!productId) return alert("Select a product");
+    if (!productId) return alert("Select a product");
 
-  const unitPrice = (pricePerKg / 1000) * packetSize;
-  const totalPrice = unitPrice * count;
-
-  // Prevent sale if no stock
-  if (txnType === "sale") {
-    const available =
-      packetSize === 500
-        ? selectedProduct?.stock_packets_500 || 0
-        : selectedProduct?.stock_packets_250 || 0;
-
-    if (available < count) {
-      return alert(
-        `Not enough stock.\nAvailable: ${available}\nRequested: ${count}`
-      );
+    // Validate sale-specific fields
+    if (txnType === "sale" && !customerName.trim()) {
+      return alert("Please enter customer name for sale transactions");
     }
+
+    const unitPrice = (pricePerKg / 1000) * packetSize;
+    const totalPrice = unitPrice * count;
+
+    // Prevent sale if no stock
+    if (txnType === "sale") {
+      const available =
+        packetSize === 500
+          ? selectedProduct?.stock_packets_500 || 0
+          : selectedProduct?.stock_packets_250 || 0;
+
+      if (available < count) {
+        return alert(
+          `Not enough stock.\nAvailable: ${available}\nRequested: ${count}`
+        );
+      }
+    }
+
+    // ⭐ MUST include user session token for RLS
+    const {
+      data: { session },
+    } = await supabase.auth.getSession();
+
+    if (!session?.access_token) {
+      alert("Not logged in");
+      return;
+    }
+
+    const res = await fetch("/api/transaction", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${session.access_token}`, // ⭐ REQUIRED
+      },
+      body: JSON.stringify({
+        productId,
+        txnType,
+        packetSize,
+        count,
+        unitPrice,
+        totalPrice,
+        customerName: txnType === "sale" ? customerName : null,
+        paymentMethod: txnType === "sale" ? paymentMethod : null,
+      }),
+    });
+
+    if (!res.ok) {
+      const e = await res.json();
+      alert("Failed: " + e.error);
+      return;
+    }
+
+    alert("Transaction added");
+    router.push("/transactions");
   }
-
-  // ⭐ MUST include user session token for RLS
-  const {
-    data: { session },
-  } = await supabase.auth.getSession();
-
-  if (!session?.access_token) {
-    alert("Not logged in");
-    return;
-  }
-
-  const res = await fetch("/api/transaction", {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-      Authorization: `Bearer ${session.access_token}`, // ⭐ REQUIRED
-    },
-    body: JSON.stringify({
-      productId,
-      txnType,
-      packetSize,
-      count,
-      unitPrice,
-      totalPrice,
-    }),
-  });
-
-  if (!res.ok) {
-    const e = await res.json();
-    alert("Failed: " + e.error);
-    return;
-  }
-
-  alert("Transaction added");
-  router.push("/transactions");
-}
 
 
   // ------------------------------
@@ -133,6 +144,66 @@ export default function AddTransactionPage() {
         </h2>
 
         <div className="space-y-6">
+          {/* Transaction Type */}
+          <div>
+            <label className="kicker">Transaction Type</label>
+            <div style={{ display: "flex", gap: "12px", marginTop: "8px" }}>
+              <label
+                style={{
+                  flex: 1,
+                  display: "flex",
+                  alignItems: "center",
+                  gap: "8px",
+                  padding: "12px 16px",
+                  borderRadius: "12px",
+                  border: "1px solid var(--border)",
+                  background: txnType === "purchase" ? "#EEF3FF" : "#ffffff",
+                  cursor: "pointer",
+                  transition: "all 0.2s ease",
+                }}
+              >
+                <input
+                  type="radio"
+                  name="txnType"
+                  value="purchase"
+                  checked={txnType === "purchase"}
+                  onChange={() => setTxnType("purchase")}
+                  style={{ cursor: "pointer" }}
+                />
+                <span style={{ fontWeight: 500, color: "var(--text)" }}>
+                  Purchase
+                </span>
+              </label>
+
+              <label
+                style={{
+                  flex: 1,
+                  display: "flex",
+                  alignItems: "center",
+                  gap: "8px",
+                  padding: "12px 16px",
+                  borderRadius: "12px",
+                  border: "1px solid var(--border)",
+                  background: txnType === "sale" ? "#EEF3FF" : "#ffffff",
+                  cursor: "pointer",
+                  transition: "all 0.2s ease",
+                }}
+              >
+                <input
+                  type="radio"
+                  name="txnType"
+                  value="sale"
+                  checked={txnType === "sale"}
+                  onChange={() => setTxnType("sale")}
+                  style={{ cursor: "pointer" }}
+                />
+                <span style={{ fontWeight: 500, color: "var(--text)" }}>
+                  Sale
+                </span>
+              </label>
+            </div>
+          </div>
+
           {/* Product */}
           <div>
             <label className="kicker">Product</label>
@@ -173,18 +244,34 @@ export default function AddTransactionPage() {
             </div>
           )}
 
-          {/* Type */}
-          <div>
-            <label className="kicker">Type</label>
-            <select
-              className="input mt-1"
-              value={txnType}
-              onChange={(e) => setTxnType(e.target.value as any)}
-            >
-              <option value="purchase">Purchase</option>
-              <option value="sale">Sale</option>
-            </select>
-          </div>
+          {/* SALE SPECIFIC FIELDS */}
+          {txnType === "sale" && (
+            <>
+              <div>
+                <label className="kicker">Customer Name</label>
+                <input
+                  type="text"
+                  className="input mt-1"
+                  placeholder="Enter customer name"
+                  value={customerName}
+                  onChange={(e) => setCustomerName(e.target.value)}
+                />
+              </div>
+
+              <div>
+                <label className="kicker">Payment Method</label>
+                <select
+                  className="input mt-1"
+                  value={paymentMethod}
+                  onChange={(e) => setPaymentMethod(e.target.value as any)}
+                >
+                  <option value="cash">Cash</option>
+                  <option value="gpay">GPay</option>
+                  <option value="lend">Lend (Udhaar)</option>
+                </select>
+              </div>
+            </>
+          )}
 
           {/* Packet Size */}
           <div>
@@ -253,6 +340,8 @@ export default function AddTransactionPage() {
                 setPacketSize(250);
                 setCount(1);
                 setPricePerKg(0);
+                setCustomerName("");
+                setPaymentMethod("cash");
               }}
             >
               Reset

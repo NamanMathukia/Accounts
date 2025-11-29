@@ -11,13 +11,19 @@ const supabaseAdmin = createClient(supabaseUrl, serviceRoleKey);
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
   if (req.method !== "POST") return res.status(405).json({ error: "Only POST allowed" });
 
-  const { productId, txnType, packetSize, count, unitPrice } = req.body;
+  const { productId, txnType, packetSize, count, unitPrice, customerName, paymentMethod } = req.body;
   if (!productId || !txnType)
     return res.status(400).json({ error: "Missing required fields" });
 
   // Calculate values
   const qty = Number(packetSize) * Number(count);
   const total = Number(unitPrice) * Number(count);
+
+  // Determine Payment Status
+  let paymentStatus = "paid";
+  if (txnType === "sale" && paymentMethod === "lend") {
+    paymentStatus = "pending";
+  }
 
   // -----------------------------
   // 1️⃣ Get user session from client headers
@@ -36,9 +42,6 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     return res.status(401).json({ error: "Invalid user token" });
 
   // -----------------------------
-  // 2️⃣ Insert into transactions WITH user_id (RLS requirement)
-  // -----------------------------
-  // -----------------------------
   // 2️⃣ Call RPC to insert transaction AND update product stock
   // -----------------------------
   const { error: rpcErr } = await supabaseAdmin.rpc(
@@ -51,8 +54,11 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       p_count_packets: Number(count),
       p_unit_price: Number(unitPrice),
       p_total_price: total,
-      p_user_id: user.id, // ⭐ Passed to RPC
-      p_notes: null
+      p_user_id: user.id,
+      p_notes: null,
+      p_customer_name: customerName || null,
+      p_payment_method: paymentMethod || null,
+      p_payment_status: paymentStatus
     }
   );
 
