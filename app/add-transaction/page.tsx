@@ -18,7 +18,7 @@ export default function AddTransactionPage() {
   const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
 
   const [txnType, setTxnType] = useState<"purchase" | "sale">("purchase");
-  const [packetSize, setPacketSize] = useState<number>(250);
+  const [packetSize, setPacketSize] = useState<number>(500);
   const [count, setCount] = useState<number>(1);
 
   // price per KG (NEW)
@@ -364,7 +364,7 @@ export default function AddTransactionPage() {
 
             {/* Quick preset buttons */}
             <div style={{ display: "flex", gap: "8px", marginTop: "8px", marginBottom: "8px" }}>
-              {[100, 200, 300, 500].map((preset) => (
+              {[500, 600, 700, 800].map((preset) => (
                 <button
                   key={preset}
                   type="button"
