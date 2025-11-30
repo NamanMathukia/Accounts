@@ -113,7 +113,7 @@ export default function LoginPage() {
         />
 
         {error && (
-          <p style={{ color: "red", textAlign: "center", marginBottom: 8 }}>
+          <p className="error-text">
             {error}
           </p>
         )}
@@ -122,8 +122,8 @@ export default function LoginPage() {
           {loading
             ? "Please wait…"
             : mode === "signin"
-            ? "Sign In"
-            : "Create Account"}
+              ? "Sign In"
+              : "Create Account"}
         </button>
       </form>
 

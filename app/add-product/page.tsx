@@ -47,15 +47,8 @@ export default function AddProductPage() {
 
   return (
     <div className="fade">
-      <div className="card p-6" style={{ marginTop: 12 }}>
-        <h2
-          style={{
-            fontSize: 24,
-            fontWeight: 700,
-            marginBottom: 8,
-            color: "var(--text)",
-          }}
-        >
+      <div className="card p-6 mt-12">
+        <h2 className="page-title" style={{ color: "var(--text)" }}>
           Add Product
         </h2>
 

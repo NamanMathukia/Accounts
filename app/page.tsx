@@ -73,10 +73,10 @@ export default function DashboardPage() {
     <div className="fade">
       {/* Title */}
       <div className="mb-5">
-        <h1 style={{ fontSize: 28, fontWeight: 700, color: "var(--text)" }}>
+        <h1 className="page-title" style={{ fontSize: 28, color: "var(--text)" }}>
           Inventory
         </h1>
-        <p className="kicker" style={{ marginTop: 2 }}>
+        <p className="kicker mt-2">
           Current stock overview
         </p>
       </div>
@@ -84,9 +84,9 @@ export default function DashboardPage() {
       {/* Skeleton Loading */}
       {loading && (
         <div className="space-y-4">
-          <div className="card p-4 pulse" style={{ height: 90 }} />
-          <div className="card p-4 pulse" style={{ height: 90 }} />
-          <div className="card p-4 pulse" style={{ height: 90 }} />
+          <div className="card p-4 pulse card-pulse" />
+          <div className="card p-4 pulse card-pulse" />
+          <div className="card p-4 pulse card-pulse" />
         </div>
       )}
 
@@ -102,29 +102,18 @@ export default function DashboardPage() {
           {products.map((p) => (
             <div
               key={p.id}
-              className="card fade-slide p-4"
-              style={{
-                display: "flex",
-                justifyContent: "space-between",
-                alignItems: "center",
-                padding: "20px",
-              }}
+              className="card fade-slide product-item"
+              style={{ padding: "20px" }}
             >
               <div>
-                <div style={{ fontWeight: 700, fontSize: 18 }}>{p.name}</div>
+                <div className="product-name">{p.name}</div>
                 <div className="kicker">
                   Default Size: {p.default_unit_grams} g
                 </div>
               </div>
 
-              <div style={{ textAlign: "right", minWidth: 130 }}>
-                <div
-                  style={{
-                    fontWeight: 700,
-                    fontSize: 16,
-                    color: "var(--accent)",
-                  }}
-                >
+              <div className="product-stock min-w-130">
+                <div className="text-bold" style={{ fontSize: 16, color: "var(--accent)" }}>
                   {formatStock(p)}
                 </div>
                 <div className="kicker">{totalGrams(p)} g total</div>

@@ -15,7 +15,7 @@ export default function StatCard({
     <div className={`card p-3 flex justify-between items-center ${className}`}>
       <div>
         <div className="kicker">{title}</div>
-        <div style={{ fontSize: 18, fontWeight: 700, color: accent }}>
+        <div className="text-large" style={{ color: accent }}>
           {value}
         </div>
       </div>

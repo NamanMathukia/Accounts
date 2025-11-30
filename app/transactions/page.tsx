@@ -149,8 +149,7 @@ export default function TransactionsPage() {
         <h2 className="text-xl font-bold">Transactions</h2>
         <button
           onClick={loadTxns}
-          className="btn-secondary"
-          style={{ padding: "8px 16px", fontSize: "14px" }}
+          className="btn-secondary btn-small"
         >
           🔄 Refresh
         </button>
@@ -165,7 +164,7 @@ export default function TransactionsPage() {
           paddingBottom: "6px",
         }}
       >
-        <table className="table w-full" style={{ minWidth: "900px" }}>
+        <table className="table w-full min-w-900">
           <thead>
             <tr>
               <th className="p-3 text-left">Date</th>
@@ -265,7 +264,7 @@ export default function TransactionsPage() {
                     message="Delete this transaction permanently?"
                     onClick={() => deleteTxn(t)}
                   >
-                    <span style={{ fontSize: "1.2rem" }}>🗑</span>
+                    <span className="text-emoji">🗑</span>
                   </ConfirmButton>
                 </td>
               </tr>

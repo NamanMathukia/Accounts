@@ -148,7 +148,7 @@ export default function FinancialsPage() {
 
   return (
     <div className="fade-slide">
-      <h2 style={{ fontSize: 20, fontWeight: 700 }}>Financials</h2>
+      <h2 className="section-title">Financials</h2>
       <p className="kicker mb-4">Revenue, cost, expenses and net profit</p>
 
       {/* Summary Cards */}
@@ -162,7 +162,7 @@ export default function FinancialsPage() {
 
       {/* By Product Breakdown */}
       <div className="card p-3 mt-3 fade-slide">
-        <h3 style={{ fontWeight: 700 }}>By Product</h3>
+        <h3 className="text-bold">By Product</h3>
         <div className="mt-3 space-y-2">
           {Object.keys(byProduct).length === 0 && (
             <div className="kicker">No product transactions yet</div>
@@ -174,17 +174,17 @@ export default function FinancialsPage() {
               className="p-3 bg-white/3 rounded-md flex justify-between items-center fade"
             >
               <div>
-                <div style={{ fontWeight: 700 }}>{obj.name}</div>
+                <div className="text-bold">{obj.name}</div>
                 <div className="kicker">
                   Revenue: ₹{obj.revenue.toFixed(2)} • Cost: ₹{obj.cost.toFixed(2)}
                   {obj.pending > 0 && (
-                    <span style={{ color: "#F59E0B" }}> • Pending: ₹{obj.pending.toFixed(2)}</span>
+                    <span className="text-pending"> • Pending: ₹{obj.pending.toFixed(2)}</span>
                   )}
                 </div>
               </div>
 
-              <div style={{ textAlign: "right" }}>
-                <div style={{ fontWeight: 700, color: "var(--accent1)" }}>
+              <div className="text-right">
+                <div className="text-bold text-accent-light">
                   ₹{obj.profit.toFixed(2)}
                 </div>
               </div>
@@ -195,7 +195,7 @@ export default function FinancialsPage() {
 
       {/* Expense Summary */}
       <div className="card p-3 mt-4 fade-slide">
-        <h3 style={{ fontWeight: 700 }}>Recent Expenses</h3>
+        <h3 className="text-bold">Recent Expenses</h3>
 
         <div className="mt-3 space-y-2">
           {expenses.length === 0 && <div className="kicker">No expenses yet…</div>}

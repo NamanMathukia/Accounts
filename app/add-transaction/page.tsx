@@ -138,8 +138,8 @@ export default function AddTransactionPage() {
 
   return (
     <div className="fade">
-      <div className="card p-6" style={{ marginTop: 12 }}>
-        <h2 style={{ fontSize: 24, fontWeight: 700, marginBottom: 8 }}>
+      <div className="card p-6 mt-12">
+        <h2 className="page-title">
           Add Transaction
         </h2>
 
@@ -147,57 +147,29 @@ export default function AddTransactionPage() {
           {/* Transaction Type */}
           <div>
             <label className="kicker">Transaction Type</label>
-            <div style={{ display: "flex", gap: "12px", marginTop: "8px" }}>
-              <label
-                style={{
-                  flex: 1,
-                  display: "flex",
-                  alignItems: "center",
-                  gap: "8px",
-                  padding: "12px 16px",
-                  borderRadius: "12px",
-                  border: "1px solid var(--border)",
-                  background: txnType === "purchase" ? "#EEF3FF" : "#ffffff",
-                  cursor: "pointer",
-                  transition: "all 0.2s ease",
-                }}
-              >
+            <div className="radio-container">
+              <label className={`radio-option ${txnType === "purchase" ? "selected" : ""}`}>
                 <input
                   type="radio"
                   name="txnType"
                   value="purchase"
                   checked={txnType === "purchase"}
                   onChange={() => setTxnType("purchase")}
-                  style={{ cursor: "pointer" }}
                 />
-                <span style={{ fontWeight: 500, color: "var(--text)" }}>
+                <span>
                   Purchase
                 </span>
               </label>
 
-              <label
-                style={{
-                  flex: 1,
-                  display: "flex",
-                  alignItems: "center",
-                  gap: "8px",
-                  padding: "12px 16px",
-                  borderRadius: "12px",
-                  border: "1px solid var(--border)",
-                  background: txnType === "sale" ? "#EEF3FF" : "#ffffff",
-                  cursor: "pointer",
-                  transition: "all 0.2s ease",
-                }}
-              >
+              <label className={`radio-option ${txnType === "sale" ? "selected" : ""}`}>
                 <input
                   type="radio"
                   name="txnType"
                   value="sale"
                   checked={txnType === "sale"}
                   onChange={() => setTxnType("sale")}
-                  style={{ cursor: "pointer" }}
                 />
-                <span style={{ fontWeight: 500, color: "var(--text)" }}>
+                <span>
                   Sale
                 </span>
               </label>
@@ -223,7 +195,7 @@ export default function AddTransactionPage() {
 
           {/* Inventory Preview */}
           {selectedProduct && (
-            <div className="card p-4" style={{ background: "#F8FAFF" }}>
+            <div className="card p-4 card-light-blue">
               <div className="kicker mb-1">Available Stock</div>
 
               {(selectedProduct.stock_packets_500 || 0) > 0 && (
@@ -235,7 +207,7 @@ export default function AddTransactionPage() {
 
               {(selectedProduct.stock_packets_250 || 0) === 0 &&
                 (selectedProduct.stock_packets_500 || 0) === 0 && (
-                  <div style={{ color: "#777" }}>0 packets</div>
+                  <div className="text-muted-gray">0 packets</div>
                 )}
 
               <div className="kicker mt-1">
@@ -289,69 +261,26 @@ export default function AddTransactionPage() {
           {/* Count */}
           <div>
             <label className="kicker">Packets</label>
-            <div style={{ display: "flex", gap: "8px", marginTop: "4px" }}>
+            <div className="flex-row gap-8 mt-1">
               <button
                 type="button"
                 onClick={() => setCount(Math.max(1, count - 1))}
-                style={{
-                  width: "48px",
-                  height: "48px",
-                  borderRadius: "12px",
-                  border: "1px solid var(--border)",
-                  background: "#ffffff",
-                  fontSize: "20px",
-                  fontWeight: "600",
-                  color: "var(--text)",
-                  cursor: "pointer",
-                  transition: "all 0.2s ease",
-                }}
-                onMouseEnter={(e) => {
-                  e.currentTarget.style.background = "#F8FAFF";
-                  e.currentTarget.style.borderColor = "#164B8A";
-                }}
-                onMouseLeave={(e) => {
-                  e.currentTarget.style.background = "#ffffff";
-                  e.currentTarget.style.borderColor = "var(--border)";
-                }}
+                className="counter-btn"
               >
                 −
               </button>
               <input
                 type="number"
                 min={1}
-                className="input"
-                style={{
-                  flex: 1,
-                  textAlign: "center",
-                  fontSize: "18px",
-                  fontWeight: "600",
-                }}
+                className="input input-center"
+                style={{ flex: 1 }}
                 value={count}
                 onChange={(e) => setCount(Math.max(1, Number(e.target.value) || 1))}
               />
               <button
                 type="button"
                 onClick={() => setCount(count + 1)}
-                style={{
-                  width: "48px",
-                  height: "48px",
-                  borderRadius: "12px",
-                  border: "1px solid var(--border)",
-                  background: "#ffffff",
-                  fontSize: "20px",
-                  fontWeight: "600",
-                  color: "var(--text)",
-                  cursor: "pointer",
-                  transition: "all 0.2s ease",
-                }}
-                onMouseEnter={(e) => {
-                  e.currentTarget.style.background = "#F8FAFF";
-                  e.currentTarget.style.borderColor = "#164B8A";
-                }}
-                onMouseLeave={(e) => {
-                  e.currentTarget.style.background = "#ffffff";
-                  e.currentTarget.style.borderColor = "var(--border)";
-                }}
+                className="counter-btn"
               >
                 +
               </button>
@@ -363,66 +292,24 @@ export default function AddTransactionPage() {
             <label className="kicker">Price per KG (₹)</label>
 
             {/* Quick preset buttons */}
-            <div style={{ display: "flex", gap: "8px", marginTop: "8px", marginBottom: "8px" }}>
+            <div className="flex-row gap-8 mt-2 mb-8">
               {[500, 600, 700, 800].map((preset) => (
                 <button
                   key={preset}
                   type="button"
                   onClick={() => setPricePerKg(preset)}
-                  style={{
-                    flex: 1,
-                    padding: "8px 12px",
-                    borderRadius: "8px",
-                    border: "1px solid var(--border)",
-                    background: pricePerKg === preset ? "#164B8A" : "#ffffff",
-                    color: pricePerKg === preset ? "#ffffff" : "var(--text)",
-                    fontSize: "14px",
-                    fontWeight: "500",
-                    cursor: "pointer",
-                    transition: "all 0.2s ease",
-                  }}
-                  onMouseEnter={(e) => {
-                    if (pricePerKg !== preset) {
-                      e.currentTarget.style.background = "#F8FAFF";
-                      e.currentTarget.style.borderColor = "#164B8A";
-                    }
-                  }}
-                  onMouseLeave={(e) => {
-                    if (pricePerKg !== preset) {
-                      e.currentTarget.style.background = "#ffffff";
-                      e.currentTarget.style.borderColor = "var(--border)";
-                    }
-                  }}
+                  className={`preset-btn ${pricePerKg === preset ? "active" : ""}`}
                 >
                   ₹{preset}
                 </button>
               ))}
             </div>
 
-            <div style={{ display: "flex", gap: "8px" }}>
+            <div className="flex-row gap-8">
               <button
                 type="button"
                 onClick={() => setPricePerKg(Math.max(0, pricePerKg - 10))}
-                style={{
-                  width: "48px",
-                  height: "48px",
-                  borderRadius: "12px",
-                  border: "1px solid var(--border)",
-                  background: "#ffffff",
-                  fontSize: "20px",
-                  fontWeight: "600",
-                  color: "var(--text)",
-                  cursor: "pointer",
-                  transition: "all 0.2s ease",
-                }}
-                onMouseEnter={(e) => {
-                  e.currentTarget.style.background = "#F8FAFF";
-                  e.currentTarget.style.borderColor = "#164B8A";
-                }}
-                onMouseLeave={(e) => {
-                  e.currentTarget.style.background = "#ffffff";
-                  e.currentTarget.style.borderColor = "var(--border)";
-                }}
+                className="counter-btn"
               >
                 −
               </button>
@@ -430,39 +317,15 @@ export default function AddTransactionPage() {
                 type="number"
                 min={0}
                 step={10}
-                className="input"
-                style={{
-                  flex: 1,
-                  textAlign: "center",
-                  fontSize: "18px",
-                  fontWeight: "600",
-                }}
+                className="input input-center"
+                style={{ flex: 1 }}
                 value={pricePerKg}
                 onChange={(e) => setPricePerKg(Math.max(0, Number(e.target.value) || 0))}
               />
               <button
                 type="button"
                 onClick={() => setPricePerKg(pricePerKg + 10)}
-                style={{
-                  width: "48px",
-                  height: "48px",
-                  borderRadius: "12px",
-                  border: "1px solid var(--border)",
-                  background: "#ffffff",
-                  fontSize: "20px",
-                  fontWeight: "600",
-                  color: "var(--text)",
-                  cursor: "pointer",
-                  transition: "all 0.2s ease",
-                }}
-                onMouseEnter={(e) => {
-                  e.currentTarget.style.background = "#F8FAFF";
-                  e.currentTarget.style.borderColor = "#164B8A";
-                }}
-                onMouseLeave={(e) => {
-                  e.currentTarget.style.background = "#ffffff";
-                  e.currentTarget.style.borderColor = "var(--border)";
-                }}
+                className="counter-btn"
               >
                 +
               </button>
@@ -471,9 +334,9 @@ export default function AddTransactionPage() {
 
           {/* Total Preview */}
           {pricePerKg > 0 && count > 0 && (
-            <div className="card p-4" style={{ background: "#E8F0FF" }}>
+            <div className="card p-4 card-blue-accent">
               <div className="kicker">Total Amount</div>
-              <div style={{ fontSize: 22, fontWeight: 700, color: "#164B8A" }}>
+              <div className="text-xl" style={{ color: "#164B8A" }}>
                 ₹{((pricePerKg / 1000) * packetSize * count).toFixed(2)}
               </div>
             </div>

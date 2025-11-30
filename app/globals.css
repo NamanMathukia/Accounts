@@ -589,3 +589,262 @@ body.login-page .main-content {
   font-weight: 700;
   color: var(--accent);
 }
+
+/* -------------------------------- */
+/* UTILITY CLASSES                  */
+/* -------------------------------- */
+
+/* Spacing */
+.mt-12 {
+  margin-top: 12px;
+}
+
+.mt-1 {
+  margin-top: 4px;
+}
+
+.mt-2 {
+  margin-top: 8px;
+}
+
+.mb-8 {
+  margin-bottom: 8px;
+}
+
+.gap-8 {
+  gap: 8px;
+}
+
+.gap-12 {
+  gap: 12px;
+}
+
+/* Layout */
+.flex-row {
+  display: flex;
+}
+
+.flex-center {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.text-right {
+  text-align: right;
+}
+
+.text-center {
+  text-align: center;
+}
+
+.min-w-130 {
+  min-width: 130px;
+}
+
+.min-w-900 {
+  min-width: 900px;
+}
+
+/* Typography */
+.page-title {
+  font-size: 24px;
+  font-weight: 700;
+  margin-bottom: 8px;
+}
+
+.section-title {
+  font-size: 20px;
+  font-weight: 700;
+}
+
+.product-name {
+  font-weight: 700;
+  font-size: 18px;
+}
+
+.text-bold {
+  font-weight: 700;
+}
+
+.text-medium {
+  font-weight: 500;
+}
+
+.text-muted-gray {
+  color: #777;
+}
+
+.text-accent {
+  color: var(--accent);
+}
+
+.text-accent-light {
+  color: var(--accent-light);
+}
+
+.text-pending {
+  color: #F59E0B;
+}
+
+.error-text {
+  color: red;
+  text-align: center;
+  margin-bottom: 8px;
+}
+
+.text-large {
+  font-size: 18px;
+  font-weight: 600;
+}
+
+.text-xl {
+  font-size: 22px;
+  font-weight: 700;
+}
+
+.text-emoji {
+  font-size: 1.2rem;
+}
+
+/* Card Variants */
+.card-light-blue {
+  background: #F8FAFF;
+}
+
+.card-blue-accent {
+  background: #E8F0FF;
+}
+
+.card-pulse {
+  height: 90px;
+}
+
+/* Input Variants */
+.input-center {
+  text-align: center;
+  font-size: 18px;
+  font-weight: 600;
+}
+
+/* -------------------------------- */
+/* BUTTON COMPONENTS                */
+/* -------------------------------- */
+
+/* Counter Buttons (+ / -) */
+.counter-btn {
+  width: 48px;
+  height: 48px;
+  border-radius: 12px;
+  border: 1px solid var(--border);
+  background: #ffffff;
+  font-size: 20px;
+  font-weight: 600;
+  color: var(--text);
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.counter-btn:hover {
+  background: #F8FAFF;
+  border-color: #164B8A;
+}
+
+/* Preset Buttons */
+.preset-btn {
+  flex: 1;
+  padding: 8px 12px;
+  border-radius: 8px;
+  border: 1px solid var(--border);
+  background: #ffffff;
+  color: var(--text);
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.preset-btn:hover {
+  background: #F8FAFF;
+  border-color: #164B8A;
+}
+
+.preset-btn.active {
+  background: #164B8A;
+  color: #ffffff;
+  border-color: #164B8A;
+}
+
+.preset-btn.active:hover {
+  background: #164B8A;
+  border-color: #164B8A;
+}
+
+/* Small Button Variant */
+.btn-small {
+  padding: 8px 16px;
+  font-size: 14px;
+}
+
+/* -------------------------------- */
+/* RADIO OPTION STYLING             */
+/* -------------------------------- */
+
+.radio-container {
+  display: flex;
+  gap: 12px;
+  margin-top: 8px;
+}
+
+.radio-option {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 12px 16px;
+  border-radius: 12px;
+  border: 1px solid var(--border);
+  background: #ffffff;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.radio-option.selected {
+  background: #EEF3FF;
+}
+
+.radio-option input[type="radio"] {
+  cursor: pointer;
+}
+
+.radio-option span {
+  font-weight: 500;
+  color: var(--text);
+}
+
+/* -------------------------------- */
+/* PRODUCT LIST STYLING             */
+/* -------------------------------- */
+
+.product-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 16px;
+  border-bottom: 1px solid var(--border);
+  transition: background 0.2s ease;
+}
+
+.product-item:hover {
+  background: #F8FAFF;
+}
+
+.product-stock {
+  text-align: right;
+}
+
+.product-stock-value {
+  font-weight: 700;
+  color: var(--accent-light);
+}
+

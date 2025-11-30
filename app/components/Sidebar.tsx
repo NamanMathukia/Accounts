@@ -81,11 +81,11 @@ export default function Sidebar() {
             {profile.name ? profile.name.charAt(0).toUpperCase() : "U"}
           </div>
 
-          <div className="sidebar-email" style={{ fontWeight: 700 }}>
+          <div className="sidebar-email text-bold">
             {profile.name}
           </div>
 
-          <div className="sidebar-email" style={{ fontSize: 13, opacity: 0.7 }}>
+          <div className="sidebar-email kicker" style={{ opacity: 0.7 }}>
             {profile.phone || profile.email || "—"}
           </div>
         </div>
