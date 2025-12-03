@@ -200,24 +200,10 @@ Tailwind CSS
 
 Supabase (Auth + DB + RLS + RPC)
 
-Vercel (deployment)
-
-🚀 Deployment
-
-Push to GitHub
-
-Deploy on Vercel
-
-Add ENV variables:
-
-NEXT_PUBLIC_SUPABASE_URL=
-NEXT_PUBLIC_SUPABASE_ANON_KEY=
-SUPABASE_SERVICE_ROLE_KEY=
+Vercel (deployment) link is 
+https://accounts-gamma-nine.vercel.app/
 
 
-Apply SQL schema (RPCs + RLS policies)
-
-App will fully run from mobile & desktop
 
 🧪 Testing Checklist
 
