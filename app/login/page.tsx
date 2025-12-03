@@ -5,8 +5,9 @@ import { supabase } from "../../lib/supabaseClient";
 
 export default function LoginPage() {
   const [mode, setMode] = useState<"signin" | "signup">("signin");
-  const [name, setName] = useState(""); // NEW
-  const [identifier, setIdentifier] = useState("");
+  const [name, setName] = useState("");
+  const [email, setEmail] = useState("");
+  const [phone, setPhone] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
@@ -19,32 +20,48 @@ export default function LoginPage() {
     return /^\d{10}$/.test(str);
   }
 
-  // Convert phone → fake email
-  function toEmailFormat(value: string) {
-    return isValidPhone(value) ? `${value}@phone.user` : value;
-  }
-
   async function handleAuth(e: any) {
     e.preventDefault();
     setError("");
     setLoading(true);
 
-    const input = identifier.trim();
-    const email = toEmailFormat(input);
-    const phone = isValidPhone(input) ? input : null;
+    const emailTrimmed = email.trim();
+    const phoneTrimmed = phone.trim();
 
-    // Signup: name required
-    if (mode === "signup" && name.trim().length < 2) {
-      setError("Please enter your full name");
-      setLoading(false);
-      return;
+    // Validation
+    if (mode === "signup") {
+      // Signup validations
+      if (name.trim().length < 2) {
+        setError("Please enter your full name");
+        setLoading(false);
+        return;
+      }
+
+      if (!isValidEmail(emailTrimmed)) {
+        setError("Please enter a valid email address");
+        setLoading(false);
+        return;
+      }
+
+      if (!isValidPhone(phoneTrimmed)) {
+        setError("Please enter a valid 10-digit phone number");
+        setLoading(false);
+        return;
+      }
+    } else {
+      // Signin validation - email required
+      if (!isValidEmail(emailTrimmed)) {
+        setError("Please enter a valid email address");
+        setLoading(false);
+        return;
+      }
     }
 
     try {
       if (mode === "signin") {
-        // Login always uses fake email
+        // Sign in with email
         const { error } = await supabase.auth.signInWithPassword({
-          email,
+          email: emailTrimmed,
           password,
         });
 
@@ -52,21 +69,29 @@ export default function LoginPage() {
 
         window.location.replace("/");
       } else {
-        // SIGNUP
+        // Sign up with email and phone
         const { error } = await supabase.auth.signUp({
-          email,
+          email: emailTrimmed,
           password,
           options: {
             data: {
-              name,
-              phone, // RAW phone stored here!
+              name: name.trim(),
+              phone: phoneTrimmed,
             },
           },
         });
 
         if (error) throw error;
 
-        alert("Account created. Please sign in.");
+        alert(
+          "Account created! Please check your email to verify your account before signing in."
+        );
+        setMode("signin");
+        // Clear form
+        setName("");
+        setEmail("");
+        setPhone("");
+        setPassword("");
       }
     } catch (err: any) {
       setError(err.message || "Authentication failed");
@@ -94,15 +119,31 @@ export default function LoginPage() {
           />
         )}
 
+        {/* EMAIL (Always required) */}
         <input
-          type="text"
-          placeholder="Email or Phone"
-          value={identifier}
-          onChange={(e) => setIdentifier(e.target.value)}
+          type="email"
+          placeholder="Email Address"
+          value={email}
+          onChange={(e) => setEmail(e.target.value)}
           className="login-input"
           required
         />
 
+        {/* PHONE (Signup only) */}
+        {mode === "signup" && (
+          <input
+            type="tel"
+            placeholder="Phone Number (10 digits)"
+            className="login-input"
+            required
+            value={phone}
+            onChange={(e) => setPhone(e.target.value)}
+            maxLength={10}
+            pattern="\d{10}"
+          />
+        )}
+
+        {/* PASSWORD */}
         <input
           type="password"
           placeholder="Password"
@@ -110,13 +151,10 @@ export default function LoginPage() {
           onChange={(e) => setPassword(e.target.value)}
           className="login-input"
           required
+          minLength={6}
         />
 
-        {error && (
-          <p className="error-text">
-            {error}
-          </p>
-        )}
+        {error && <p className="error-text">{error}</p>}
 
         <button type="submit" disabled={loading} className="login-btn">
           {loading
@@ -128,7 +166,9 @@ export default function LoginPage() {
       </form>
 
       <p className="login-toggle">
-        {mode === "signin" ? "Don't have an account?" : "Already have an account?"}{" "}
+        {mode === "signin"
+          ? "Don't have an account?"
+          : "Already have an account?"}{" "}
         <span
           className="login-link"
           onClick={() => setMode(mode === "signin" ? "signup" : "signin")}
