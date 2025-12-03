@@ -1,218 +1,67 @@
-📘 Accounts App – Inventory, Sales & Financial Management
+📘 Accounts App
+Smart Inventory, Sales & Financial Management
 
-A complete mini-ERP built with Next.js 14, Supabase, and Tailwind CSS, designed specifically for small businesses that manage products in 250g / 500g packets.
+Accounts App is a lightweight mini-ERP designed for small businesses that sell packaged products (250g & 500g). It simplifies daily business operations with an intuitive, mobile-friendly interface.
 
-This app is optimized for mobile use, supports real-world store workflows, and ensures secure user-based data separation using Supabase Row-Level Security.
+⭐ Core Capabilities
+🔐 Secure Login & User-Specific Data
 
-🚀 Features
-🔐 1. Authentication (Email + Phone Login)
+Email based login
 
-Login with email OR phone number (phone uses a virtual email system)
+Each user sees only their own data
 
-Stores full name in user metadata
+📦 Product & Inventory Tracking
 
-Sidebar shows avatar initials + user name
+Add products with default packet size
 
-All data is isolated per user via RLS
+Auto-update stock through purchase and sales activity
 
-📦 2. Product & Inventory Management
+Smart packet conversion (e.g., 500g → 250g) to avoid stock conflicts
 
-Each product stores:
+🔄 Purchase & Sales Recording
 
-Product name
+Log purchases and sales with quantity and pricing
 
-Default packet size
+Supports Cash, GPay, and Credit payments
 
-Stock of 250g packets
+Automatically adjusts stock and financial reports
 
-Stock of 500g packets
+👥 Customer Management
 
-Includes:
+Add and track customer details
 
-Add product page
+Monitor outstanding balances for credit sales
 
-Live inventory dashboard
+💰 Expense Tracking
 
-Auto-updated stock on transactions
+Log business related expenses
 
-No inventory table — fully packet-based stock system
+Included in profit and financial calculations
 
-🔄 3. Transactions (Purchase & Sale)
-Purchase Page
+📊 Financial Insights
 
-Fields:
+Dashboard provides:
 
-Product
+Revenue
 
-Packet size
+Cost
 
-Number of packets
+Expenses
 
-Price per KG
-✔ App auto-calculates price per packet
-✔ Inventory increases
+Net profit
 
-Sale Page
+Credit summary
 
-Fields:
+Inventory overview
 
-Product
+🎨 Design & User Experience
 
-Packet size
+Mobile-first UI for shop owners
 
-Number of packets
+Clean, modern layout with clear navigation
 
-Price per KG
+Toast alerts and confirmations for a smooth workflow
 
-Payment mode: Cash / GPay / Credit
+🌐 Live Demo
 
-Customer (only for credit sales)
-
-✔ Sale reduces packet stock
-✔ Credit increases customer balance
-✔ If stock is insufficient, user is prompted:
-
-Convert larger packets to smaller ones?
-
-Conversion is handled safely in Supabase so inventory never mismatches.
-
-💰 4. Expense Management
-
-Add daily/monthly expenses
-
-Category, amount, notes
-
-Fully included in profit calculations
-
-Listed on the Financials page
-
-👥 5. Customer Management
-
-Add customers (name, phone)
-
-Track customer credit balance
-
-Used during credit sales
-
-📊 6. Financial Dashboard
-
-Shows:
-
-Total Revenue
-
-Total Cost
-
-Total Expenses
-
-Net Profit
-
-Profit by product
-
-Expense list
-
-Credit summary (optional)
-
-All numbers are synced with the updated transaction + customer system.
-
-🛡 Supabase Backend Implementation
-✔ Tables
-
-products
-
-transactions
-
-expenses
-
-customers
-
-All tables include:
-
-user_id UUID DEFAULT auth.uid()
-
-✔ Row-Level Security (RLS)
-
-On every table:
-
-user_id = auth.uid()
-
-✔ RPC Functions
-
-All updated to use user_id + new stock system:
-
-insert_transaction_and_update_inventory
-
-convert_packets
-
-delete_transaction
-
-These handle all stock mutations safely.
-
-🎨 UI / UX
-
-Full white + blue modern business theme
-
-Smooth animations via fade, slide, tap-scale classes
-
-Mobile-first responsive layout
-
-Redesigned Login page
-
-Redesigned Sidebar with avatar + email/name
-
-Toast notifications (no browser alert spam)
-
-Clean spacing & card design across all pages
-
-📁 Project Structure
-app/
-  login/
-  dashboard/
-  add-product/
-  add-transaction/
-      purchase/
-      sale/
-  expenses/
-  financials/
-  transactions/
-  customers/
-  components/
-      Sidebar.tsx
-      MobileMenuButton.tsx
-      Toast.tsx
-      ConfirmButton.tsx
-  api/
-      transaction.ts
-      convert.ts
-      delete-transaction.ts
-
-supabase/
-  (rpc functions + policies)
-
-🛠 Tech Stack
-
-Next.js 14 (App Router)
-
-React
-
-TypeScript
-
-Tailwind CSS
-
-Supabase (Auth + DB + RLS + RPC)
-
-Vercel (deployment) link is 
-https://accounts-gamma-nine.vercel.app/
-
-
-
-🧪 Testing Checklist
-
-✔ Purchases update inventory
-✔ Sales reduce packets
-✔ Conversion logic works
-✔ Credit customers work
-✔ Expenses included in profit
-✔ Dashboard inventory correct
-✔ Sidebar responsive
-✔ Login secure
-✔ All RLS rules enforced
+🔗 https://accounts-gamma-nine.vercel.app/
