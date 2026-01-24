@@ -174,7 +174,7 @@ export default function TransactionsPage() {
               <th className="p-3 text-left">Customer</th>
               <th className="p-3 text-left">Status</th>
               <th className="p-3 text-right">Total</th>
-              <th className="p-3 text-center">Action</th>
+              {/* <th className="p-3 text-center">Action</th> */}
             </tr>
           </thead>
 
@@ -258,7 +258,7 @@ export default function TransactionsPage() {
                   ₹{t.total_price.toLocaleString()}
                 </td>
 
-                <td className="p-3 text-center">
+                {/* <td className="p-3 text-center">
                   <ConfirmButton
                     className="p-2 text-slate-400 hover:text-red-600 transition-colors"
                     message="Delete this transaction permanently?"
@@ -266,13 +266,13 @@ export default function TransactionsPage() {
                   >
                     <span className="text-emoji">🗑</span>
                   </ConfirmButton>
-                </td>
+                </td> */}
               </tr>
             ))}
 
             {txns.length === 0 && !loading && (
               <tr>
-                <td colSpan={8} className="text-center p-8 text-slate-400 italic">
+                <td colSpan={7} className="text-center p-8 text-slate-400 italic">
                   No transactions found.
                 </td>
               </tr>
