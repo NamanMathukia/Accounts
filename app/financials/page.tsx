@@ -153,9 +153,9 @@ export default function FinancialsPage() {
 
       {/* Summary Cards */}
       <div className="grid grid-cols-1 gap-3 mb-4">
-        <StatCard title="Total Revenue (Paid)" value={`₹${summary.revenue.toFixed(2)}`} className="fade" />
+        <StatCard title="Total Revenue (Received)" value={`₹${summary.revenue.toFixed(2)}`} className="fade" />
         <StatCard title="Pending Receivables (Udhaar)" value={`₹${summary.pendingReceivables.toFixed(2)}`} className="fade" />
-        <StatCard title="Total Cost" value={`₹${summary.cost.toFixed(2)}`} className="fade" />
+        <StatCard title="Total Cost(Paid)" value={`₹${summary.cost.toFixed(2)}`} className="fade" />
         <StatCard title="Total Expenses" value={`₹${summary.expenses.toFixed(2)}`} className="fade" />
         <StatCard title="Net Profit" value={`₹${summary.profit.toFixed(2)}`} className="fade" />
       </div>
